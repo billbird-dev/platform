@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.11.2",
-    "axios": "latest",
+    "axios": "^0.21.4",
     "core-js": "^3.15.2",
     "quasar": "^2.2.0",
     "swrv": "beta",
@@ -30,8 +30,8 @@
     "eslint": "^7.31.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-vue": "latest",
+    "postcss-windicss": "^1.0.0",
     "vue-tsc": "latest",
-    "windicss-webpack-plugin": "^1.4.7",
     "workbox-webpack-plugin": "^5.0.0"
   },
   "browserslist": [

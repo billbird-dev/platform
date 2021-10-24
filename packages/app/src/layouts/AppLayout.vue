@@ -16,7 +16,6 @@ const { push } = useMainRouter();
 
 const isLoggedIn = computed((): boolean => store.getters['users/isLoggedIn']);
 const leftDrawerOpen = ref(false);
-const miniState = ref(true);
 const isInit = ref(false);
 const interval = ref<NodeJS.Timeout | null>(null);
 
