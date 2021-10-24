@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import { CreateCompanyDto, FindCompany } from 'src/company/company.dto';
@@ -11,6 +12,7 @@ export class AuthService {
   constructor(
     private readonly companyService: CompanyService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   public async register(companyData: CreateCompanyDto) {
@@ -34,11 +36,11 @@ export class AuthService {
     }
   }
 
-  public async getAuthenticatedUser(key: FindCompany, hashedPassword: string) {
+  public async getAuthenticatedUser(key: FindCompany, password: string) {
     try {
       const company = await this.companyService.getCompanyByEmailUsername(key);
 
-      await this.verifyPassword(hashedPassword, company.password);
+      await this.verifyPassword(password, company.password);
 
       return { ...company, password: undefined };
     } catch (error) {
@@ -54,10 +56,35 @@ export class AuthService {
     }
   }
 
-  public getCookieWithJwtToken(companyId: number) {
+  public getCookieWithJwtAccessToken(companyId: number) {
     const payload: TokenPayload = { companyId };
-    const token = this.jwtService.sign(payload);
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+      expiresIn: '15m',
+    });
 
-    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=15m`;
+    return `__Host-Authentication=${token}; HttpOnly; Path=/; Max-Age=900`;
+  }
+
+  public getCookieWithJwtRefreshToken(companyId: number) {
+    const payload: TokenPayload = { companyId };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: '7d',
+    });
+
+    const cookie = `__Host-Refresh=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}`;
+
+    return {
+      cookie,
+      token,
+    };
+  }
+
+  public getCookiesForLogOut() {
+    return [
+      'Authentication=; HttpOnly; Path=/; Max-Age=0',
+      'Refresh=; HttpOnly; Path=/; Max-Age=0',
+    ];
   }
 }

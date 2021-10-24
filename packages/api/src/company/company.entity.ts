@@ -25,7 +25,7 @@ export class CompanyEntity extends BaseEntity {
   @Column({ type: 'varchar', nullable: true, length: 254 })
   email: string;
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'bigint', nullable: false })
   phone: number;
 
   @Column({ type: 'boolean', nullable: false, default: false })
@@ -84,4 +84,7 @@ export class CompanyEntity extends BaseEntity {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({ type: 'text', nullable: true })
+  currentHashedRefreshToken?: string;
 }

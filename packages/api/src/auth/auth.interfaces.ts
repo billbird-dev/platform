@@ -1,3 +1,4 @@
+import { IsEmail, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Request } from 'express';
 import { CompanyEntity } from 'src/company/company.entity';
 
@@ -6,6 +7,25 @@ export interface TokenPayload {
 }
 
 export interface RequestWithCompany extends Request {
-  company: CompanyEntity;
-  companyId?: string;
+  user: CompanyEntity;
+  userId?: string;
+}
+
+class Key {
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  username?: string;
+}
+
+export class LoginUserDto {
+  @ValidateNested()
+  @IsNotEmpty()
+  key: Key;
+
+  @IsNotEmpty()
+  password: string;
 }
