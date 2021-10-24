@@ -1,4 +1,4 @@
 # BillBird (billbirdv2)
 
-BillBird Suite v2.x
+BillBird app v2.x
 

@@ -18,7 +18,7 @@
     "build": "concurrently --kill-others-on-fail \"yarn build:app\"  \"yarn build:api\"",
     "changelog": "npx auto-changelog --output CHANGELOG.md --template keepachangelog --commit-limit false -u --sort-commits date-desc --hide-credit"
   },
-   "workspaces": [
+  "workspaces": [
     "packages/*"
   ],
   "husky": {
@@ -29,9 +29,6 @@
   "lint-staged": {
     "**/**/*.{js,ts,jsx,tsx,vue}": [
       "prettier --write"
-    ],
-    "app/**/*.{js,ts,jsx,tsx,vue}": [
-      "eslint --fix"
     ]
   },
   "dependencies": {
