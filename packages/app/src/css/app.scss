@@ -1,0 +1,158 @@
+// app global css in SCSS form
+
+@font-face {
+  font-family: 'Georgia';
+  src: url('../assets/georgia\ bold.woff2') format('woff2'),
+    url('../assets/georgia\ bold.woff') format('woff'),
+    url('../assets/georgia\ bold.ttf') format('truetype');
+}
+:root,
+html,
+body {
+  margin: 0;
+  background-color: $bg;
+  color: black !important;
+  font-family: 'Noto Sans JP', sans-serif !important;
+  letter-spacing: 0.2px !important;
+  font-size: 14px;
+  scroll-behavior: smooth;
+}
+.bg {
+  background: $bg !important;
+}
+.bg-main {
+  background: mix(black, $bg, 10%) !important;
+}
+.bg-light {
+  background: $bg-light !important;
+}
+
+.bg-primary-dark {
+  background: $primary-dark !important;
+}
+.page-header {
+  margin: 0 !important;
+}
+.bordered {
+  border: 1px solid $blue-grey-12;
+  border-radius: 4px;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+//todo Custom table styles
+.b-table {
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  &__native {
+    word-wrap: break-word;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+  }
+
+  &__th {
+    text-align: left;
+    padding: 8px 5px;
+  }
+  &__td {
+    text-align: left;
+    padding: 6px 5px;
+
+    &:not(:first-child, :last-child) {
+      min-width: 100px;
+      max-width: 300px;
+    }
+
+    &--input {
+      padding: 0 2px !important;
+    }
+  }
+}
+
+li {
+  list-style-type: none;
+}
+a {
+  color: black !important;
+}
+//todo customized
+.q-field--standout .q-field__control {
+  background: mix(black, $bg, 10%) !important;
+  border-radius: 6px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+.q-drawer__content {
+  overflow: hidden !important;
+}
+.q-field--standout.q-field--highlighted .q-field__control {
+  box-shadow: none !important;
+  background: mix(black, $bg, 15%) !important;
+}
+.q-field--standout.q-field--highlighted .q-field__native {
+  color: $text-primary !important;
+}
+.q-field--error.q-field--highlighted .q-field__control {
+  background: mix(rgb(230, 217, 217), $negative, 90%) !important;
+}
+
+.q-table__card {
+  background-color: $bg !important;
+}
+.q-field__bottom {
+  padding: 4px 12px 0 !important;
+  @media screen and (max-width: 480px) {
+    display: none !important;
+  }
+}
+
+.q-btn--rectangle {
+  border-radius: 6px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+.q-dialog__inner > div {
+  border-radius: 6px;
+}
+.q-card {
+  border-radius: 6px;
+}
+p {
+  margin: 0 0 8px;
+}
+@media print {
+  .q-header,
+  .q-drawer-container,
+  .b-table,
+  .no-print * {
+    display: none !important;
+  }
+  .q-page-container {
+    padding-top: 0px !important;
+    padding-left: 0px !important;
+    padding-right: 2px;
+  }
+}
+
+.rounded-borders {
+  border-radius: 6px;
+}
+
+.b-url {
+  color: unset !important;
+  text-decoration: none;
+}
