@@ -53,7 +53,6 @@ export class CompanyEntity extends BaseEntity {
   parent: CompanyEntity;
 
   @OneToMany((type) => CompanyEntity, (CompanyEntity) => CompanyEntity.parent, {
-    onDelete: 'CASCADE',
     nullable: true,
   })
   children: CompanyEntity[];

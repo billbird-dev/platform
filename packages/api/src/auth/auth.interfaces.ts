@@ -6,8 +6,12 @@ export interface TokenPayload {
   companyId: number;
 }
 
+export interface CompanyWithParent extends Omit<CompanyEntity, 'parent'> {
+  parent: number;
+}
+
 export interface RequestWithCompany extends Request {
-  user: CompanyEntity;
+  user: CompanyWithParent;
   userId?: string;
 }
 

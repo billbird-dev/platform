@@ -20,13 +20,13 @@ export class ProductEntity extends BaseEntity {
   })
   company: CompanyEntity;
 
-  @Column({ type: 'varchar', length: 50, nullable: true, unique: true })
+  @Column({ type: 'varchar', length: 50, nullable: true })
   code: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
+  @Column({ type: 'varchar', length: 50, nullable: false })
   name: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
+  @Column({ type: 'varchar', length: 50, nullable: false })
   brand: string;
 
   @Column({ type: 'text', nullable: true })

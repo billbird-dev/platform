@@ -45,7 +45,7 @@ export class CompanyService {
 
       return await this.getById(companyId);
     } catch (error) {
-      throw 'Some error occured';
+      throw new HttpException('Some error occured', 500);
     }
   }
 
@@ -54,6 +54,12 @@ export class CompanyService {
       loadRelationIds: {
         relations: ['parent'],
       },
+      // join: {
+      //   alias: 'company',
+      //   leftJoinAndSelect: {
+      //     parent: 'company.parent',
+      //   },
+      // },
     });
 
     if (!!company) return company;
