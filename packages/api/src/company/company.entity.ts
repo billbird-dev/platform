@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { ProductEntity } from '../product/product.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -83,6 +84,12 @@ export class CompanyEntity extends BaseEntity {
 
   @Column({ type: 'timestamp', nullable: true })
   validTill: Date;
+
+  @OneToMany((type) => ProductEntity, (ProductEntity) => ProductEntity.company, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  inventory: ProductEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

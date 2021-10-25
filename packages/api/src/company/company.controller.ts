@@ -7,8 +7,8 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { RequestWithCompany } from 'src/auth/auth.interfaces';
-import JwtAuthenticationGuard from 'src/auth/jwt-auth.guard';
+import { RequestWithCompany } from '../auth/auth.interfaces';
+import JwtAuthenticationGuard from '../auth/jwt-auth.guard';
 
 @Controller('company')
 @UseInterceptors(ClassSerializerInterceptor)

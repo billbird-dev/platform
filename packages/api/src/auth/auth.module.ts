@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { CompanyService } from 'src/company/company.service';
+import { CompanyService } from '../company/company.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CompanyEntity } from 'src/company/company.entity';
+import { CompanyEntity } from '../company/company.entity';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';

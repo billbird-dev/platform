@@ -12,10 +12,10 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateCompanyDto } from 'src/company/company.dto';
+import { CreateCompanyDto } from '../company/company.dto';
 import { LoginUserDto, RequestWithCompany } from './auth.interfaces';
 import { Response } from 'express';
-import { CompanyService } from 'src/company/company.service';
+import { CompanyService } from '../company/company.service';
 import JwtRefreshGuard from './jwt-refresh.guard';
 import JwtAuthenticationGuard from './jwt-auth.guard';
 

@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
-import { CompanyService } from 'src/company/company.service';
+import { CompanyService } from '../company/company.service';
 import { TokenPayload } from './auth.interfaces';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Request } from 'express';
-import { CompanyEntity } from 'src/company/company.entity';
+import { CompanyEntity } from '../company/company.entity';
 
 export interface TokenPayload {
   companyId: number;

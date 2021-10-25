@@ -8,8 +8,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
-import { CreateCompanyDto, FindCompany } from 'src/company/company.dto';
-import { CompanyService } from 'src/company/company.service';
+import { CreateCompanyDto, FindCompany } from '../company/company.dto';
+import { CompanyService } from '../company/company.service';
 import { PostgresErrorCode } from './auth.enum';
 import { TokenPayload } from './auth.interfaces';
 
