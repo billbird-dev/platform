@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
@@ -8,6 +14,7 @@ import { PostgresErrorCode } from './auth.enum';
 import { TokenPayload } from './auth.interfaces';
 
 @Injectable()
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthService {
   constructor(
     private readonly companyService: CompanyService,
@@ -26,7 +33,7 @@ export class AuthService {
         password: hashedPass,
       });
 
-      return { ...newCompany, password: undefined };
+      return newCompany;
     } catch (error) {
       if (error?.code === PostgresErrorCode.UniqueViolation) {
         throw new HttpException('Company exists with same credentials', HttpStatus.BAD_REQUEST);
@@ -42,7 +49,7 @@ export class AuthService {
 
       await this.verifyPassword(password, company.password);
 
-      return { ...company, password: undefined };
+      return company;
     } catch (error) {
       throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
     }

@@ -56,7 +56,7 @@ export class CompanyService {
       },
     });
 
-    if (!!company) return { ...company, password: undefined };
+    if (!!company) return company;
 
     throw new HttpException('Company with this id does not exist', HttpStatus.NOT_FOUND);
   }

@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -17,6 +18,7 @@ export class CompanyEntity extends BaseEntity {
   username: string;
 
   @Column({ type: 'varchar', nullable: false, unique: true, length: 128 })
+  @Exclude()
   password: string;
 
   @Column({ type: 'varchar', nullable: true, length: 100 })
@@ -86,5 +88,6 @@ export class CompanyEntity extends BaseEntity {
   createdAt: Date;
 
   @Column({ type: 'text', nullable: true })
+  @Exclude()
   currentHashedRefreshToken?: string;
 }

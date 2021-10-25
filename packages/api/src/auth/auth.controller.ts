@@ -48,7 +48,8 @@ export class AuthController {
 
       res.header('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
 
-      res.send({ ...company, password: undefined });
+      res.send({ ...company, password: undefined, currentHashedRefreshToken: undefined });
+      return company;
     } catch (error) {
       throw new HttpException('Some error occured', 500);
     }
