@@ -7,9 +7,11 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { RequestWithCompany } from '../auth/auth.interfaces';
 import JwtAuthenticationGuard from '../auth/jwt-auth.guard';
 
+@ApiTags('company')
 @Controller('company')
 @UseInterceptors(ClassSerializerInterceptor)
 export class CompanyController {

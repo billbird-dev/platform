@@ -10,12 +10,14 @@ import {
   UseGuards,
   HttpCode,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { RequestWithCompany } from 'src/auth/auth.interfaces';
 import JwtAuthenticationGuard from 'src/auth/jwt-auth.guard';
 import { CreateProductDto, UpdateProductDto } from './product.dto';
 import { ProductEntity } from './product.entity';
 import { InventoryService } from './product.service';
 
+@ApiTags('inventory')
 @Controller('inventory')
 @UseGuards(JwtAuthenticationGuard)
 export class InventoryController {

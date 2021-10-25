@@ -25,6 +25,7 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
+    .addBasicAuth()
     .addCookieAuth('__Host-Authentication')
     .setTitle('BillBird API')
     .setDescription('BillBird platform API')

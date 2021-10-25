@@ -19,7 +19,9 @@ import { CompanyService } from '../company/company.service';
 import JwtRefreshGuard from './jwt-refresh.guard';
 import JwtAuthenticationGuard from './jwt-auth.guard';
 import { RequestWithCompany } from './auth.interfaces';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
