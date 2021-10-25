@@ -13,11 +13,12 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateCompanyDto } from '../company/company.dto';
-import { LoginUserDto, RequestWithCompany } from './auth.interfaces';
+import { LoginUserDto } from './auth.dto';
 import { Response } from 'express';
 import { CompanyService } from '../company/company.service';
 import JwtRefreshGuard from './jwt-refresh.guard';
 import JwtAuthenticationGuard from './jwt-auth.guard';
+import { RequestWithCompany } from './auth.interfaces';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)

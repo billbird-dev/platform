@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export interface FindCompany {
@@ -29,7 +30,7 @@ export class CreateCompanyDto {
 
   @IsOptional()
   @IsNumber()
-  parent: number;
+  parent?: number;
 
   @IsString()
   branch: string;

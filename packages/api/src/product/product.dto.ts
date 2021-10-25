@@ -1,4 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateProductDto {
@@ -10,27 +11,27 @@ export class CreateProductDto {
 
   @IsOptional()
   @IsString()
-  code: string;
+  code?: string;
 
   @IsOptional()
   @IsString()
-  description: string;
+  description?: string;
 
   @IsOptional()
   @IsNumber()
-  rate: number;
+  rate?: number;
 
   @IsOptional()
   @IsString()
-  hsnCode: string;
+  hsnCode?: string;
 
   @IsOptional()
   @IsNumber()
-  quantity: number;
+  quantity?: number;
 
   @IsOptional()
   @IsString()
-  unit: string;
+  unit?: string;
 }
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {}

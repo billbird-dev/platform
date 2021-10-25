@@ -13,6 +13,7 @@ import {
 import { RequestWithCompany } from 'src/auth/auth.interfaces';
 import JwtAuthenticationGuard from 'src/auth/jwt-auth.guard';
 import { CreateProductDto, UpdateProductDto } from './product.dto';
+import { ProductEntity } from './product.entity';
 import { InventoryService } from './product.service';
 
 @Controller('inventory')
@@ -22,7 +23,10 @@ export class InventoryController {
 
   @Post()
   @HttpCode(201)
-  create(@Req() req: RequestWithCompany, @Body() productData: CreateProductDto) {
+  create(
+    @Req() req: RequestWithCompany,
+    @Body() productData: CreateProductDto,
+  ): Promise<ProductEntity> {
     return this.inventoryService.createProduct(productData, req.user.id);
   }
 
