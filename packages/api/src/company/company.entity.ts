@@ -9,6 +9,7 @@ import {
   OneToMany,
   ManyToOne,
 } from 'typeorm';
+import { CustomerEntity } from 'src/customer/customer.entity';
 
 @Entity({ name: 'company' })
 export class CompanyEntity extends BaseEntity {
@@ -89,6 +90,12 @@ export class CompanyEntity extends BaseEntity {
     onDelete: 'CASCADE',
   })
   inventory: ProductEntity[];
+
+  @OneToMany((type) => CustomerEntity, (CustomerEntity) => CustomerEntity.company, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  customers: CustomerEntity[];
 
   @CreateDateColumn()
   createdAt: Date;
