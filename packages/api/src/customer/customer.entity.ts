@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -13,7 +14,7 @@ export class CustomerEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne((type) => CompanyEntity, (companyEntity) => companyEntity.customers, {
+  @ManyToOne((type) => CompanyEntity, (companyEntity) => companyEntity.customers, {
     onDelete: 'CASCADE',
     nullable: false,
   })

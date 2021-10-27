@@ -54,12 +54,6 @@ export class CompanyService {
       loadRelationIds: {
         relations: ['parent'],
       },
-      // join: {
-      //   alias: 'company',
-      //   leftJoinAndSelect: {
-      //     parent: 'company.parent',
-      //   },
-      // },
     });
 
     if (!!company) return company;
@@ -68,6 +62,8 @@ export class CompanyService {
   }
 
   async getCompanyIfRefreshTokenMatches(refreshToken: string, companyId: number) {
+    if (!refreshToken || !companyId) throw new HttpException('Unauthorized', 401);
+
     const company = await this.getById(companyId);
 
     const isRefreshTokenMatching = await compare(refreshToken, company.currentHashedRefreshToken);

@@ -86,10 +86,10 @@ export class InventoryService {
   }
 
   async deleteProductById(companyId: number, productId: number) {
-    try {
-      await this.productRepo.delete({ company: { id: companyId }, id: productId });
-    } catch (error) {
-      throw new HttpException(error, 500);
-    }
+    const doesProductExist = await this.getProductById(companyId, productId);
+
+    if (!doesProductExist) throw new HttpException('Product not found', 400);
+
+    await this.productRepo.delete({ company: { id: companyId }, id: productId });
   }
 }

@@ -73,8 +73,6 @@ export class AuthController {
 
       res.send();
     } catch (error) {
-      console.log(error);
-
       throw new HttpException('Some error occured', 500);
     }
   }
@@ -82,8 +80,10 @@ export class AuthController {
   @UseGuards(JwtAuthenticationGuard)
   @Post('log-out')
   @HttpCode(200)
-  async logOut(@Req() request: RequestWithCompany) {
+  async logOut(@Req() request: RequestWithCompany, @Res() res: Response) {
     await this.companyService.removeRefreshToken(request.user.id);
-    request.res.header('Set-Cookie', this.authService.getCookiesForLogOut());
+
+    res.header('Set-Cookie', this.authService.getCookiesForLogOut());
+    res.send();
   }
 }
