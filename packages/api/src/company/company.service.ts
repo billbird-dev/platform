@@ -61,6 +61,16 @@ export class CompanyService {
     throw new HttpException('Company with this id does not exist', HttpStatus.NOT_FOUND);
   }
 
+  async getChildren(companyId: number) {
+    try {
+      const children = await this.companyRepo.find({ parent: { id: companyId } });
+
+      return children;
+    } catch (error) {
+      throw new HttpException('Some error occured', 500);
+    }
+  }
+
   async getCompanyIfRefreshTokenMatches(refreshToken: string, companyId: number) {
     if (!refreshToken || !companyId) throw new HttpException('Unauthorized', 401);
 
