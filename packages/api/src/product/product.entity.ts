@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -14,10 +15,11 @@ export class ProductEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => CompanyEntity, (CompanyEntity) => CompanyEntity.inventory, {
+  @ManyToOne((type) => CompanyEntity, {
     nullable: true,
-    onDelete: 'CASCADE',
+    onDelete: 'SET NULL',
   })
+  @JoinColumn({ referencedColumnName: 'id', name: 'company_id' })
   company: CompanyEntity;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
@@ -36,7 +38,7 @@ export class ProductEntity extends BaseEntity {
   rate: number;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
-  hsnCode: string;
+  hsn_code: string;
 
   @Column({ type: 'int', default: 0 })
   quantity: number;
@@ -45,8 +47,8 @@ export class ProductEntity extends BaseEntity {
   unit: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  created_at: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updated_at: Date;
 }

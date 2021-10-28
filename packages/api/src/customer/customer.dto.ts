@@ -19,15 +19,15 @@ export class CreateCustomerDto {
 
   @IsString()
   @IsOptional()
-  billingAddress?: string;
+  billing_address?: string;
 
   @IsString()
   @IsOptional()
-  shippingAddress?: string;
+  shipping_address?: string;
 
   @IsBoolean()
   @IsOptional()
-  registeredGstMember?: boolean;
+  registered_gst_member?: boolean;
 }
 
 export class updateCustomerDto extends PartialType(CreateCompanyDto) {}

@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export interface FindCompany {
@@ -23,10 +22,10 @@ export class CreateCompanyDto {
   phone: number;
 
   @IsBoolean()
-  isPremiumMember: boolean;
+  is_premium_member: boolean;
 
   @IsBoolean()
-  isParent: boolean;
+  is_parent: boolean;
 
   @IsOptional()
   @IsNumber()
@@ -45,11 +44,11 @@ export class CreateCompanyDto {
   state: string;
 
   @IsNumber()
-  pinCode: number;
+  pincode: number;
 
   @IsString()
   gstin: string;
 
   @IsString()
-  stateCode: string;
+  state_code: string;
 }

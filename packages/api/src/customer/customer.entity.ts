@@ -4,9 +4,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('customer')
@@ -14,9 +15,13 @@ export class CustomerEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => CompanyEntity, (companyEntity) => companyEntity.customers, {
-    onDelete: 'CASCADE',
+  @ManyToOne((type) => CompanyEntity, {
+    onDelete: 'SET NULL',
     nullable: false,
+  })
+  @JoinColumn({
+    name: 'company_id',
+    referencedColumnName: 'id',
   })
   company: CompanyEntity;
 
@@ -33,14 +38,17 @@ export class CustomerEntity extends BaseEntity {
   gstin: string;
 
   @Column({ type: 'text', nullable: true })
-  billingAddress: string;
+  billing_address: string;
 
   @Column({ type: 'text', nullable: true })
-  shippingAddress: string;
+  shipping_address: string;
 
   @Column({ type: 'boolean', default: false })
-  registeredGstMember: boolean;
+  registered_gst_member: boolean;
 
   @CreateDateColumn()
-  createdAt: Date;
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }

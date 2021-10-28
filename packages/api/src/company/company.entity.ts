@@ -1,15 +1,15 @@
 import { Exclude } from 'class-transformer';
-import { ProductEntity } from '../product/product.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
   CreateDateColumn,
-  OneToMany,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
-import { CustomerEntity } from 'src/customer/customer.entity';
+
+// import { ProductEntity } from '../product/product.entity';
 
 @Entity({ name: 'company' })
 export class CompanyEntity extends BaseEntity {
@@ -33,10 +33,10 @@ export class CompanyEntity extends BaseEntity {
   phone: number;
 
   @Column({ type: 'boolean', nullable: false, default: false })
-  isPremiumMember: boolean;
+  is_premium_member: boolean;
 
   @Column({ type: 'boolean', nullable: false, default: false })
-  isParent: boolean;
+  is_parent: boolean;
 
   // @Column({ type: 'int', nullable: false })
   // saleInvoiceCount;
@@ -47,19 +47,15 @@ export class CompanyEntity extends BaseEntity {
   // @Column({ type: 'int', nullable: false })
   // estimateInvoiceCount;
 
-  @ManyToOne((type) => CompanyEntity, (CompanyEntity) => CompanyEntity.children, {
-    nullable: true,
-    onDelete: 'CASCADE',
-  })
-  parent: CompanyEntity;
-
-  @OneToMany((type) => CompanyEntity, (CompanyEntity) => CompanyEntity.parent, {
-    nullable: true,
-  })
-  children: CompanyEntity[];
-
   //  @Column({ type: 'int', nullable: false })
   //   role;
+
+  @ManyToOne((type) => CompanyEntity, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'parent_id', referencedColumnName: 'id' })
+  parent: CompanyEntity;
 
   @Column({ type: 'varchar', length: 50 })
   branch: string;
@@ -74,33 +70,21 @@ export class CompanyEntity extends BaseEntity {
   state: string;
 
   @Column({ type: 'int', nullable: true })
-  pinCode: number;
+  pincode: number;
 
   @Column({ type: 'varchar', nullable: true, length: 255 })
   gstin: string;
 
   @Column({ type: 'varchar', nullable: false, length: 10 })
-  stateCode: string;
+  state_code: string;
 
   @Column({ type: 'timestamp', nullable: true })
-  validTill: Date;
-
-  @OneToMany((type) => ProductEntity, (ProductEntity) => ProductEntity.company, {
-    nullable: true,
-    onDelete: 'CASCADE',
-  })
-  inventory: ProductEntity[];
-
-  @OneToMany((type) => CustomerEntity, (CustomerEntity) => CustomerEntity.company, {
-    nullable: true,
-    onDelete: 'CASCADE',
-  })
-  customers: CustomerEntity[];
+  valid_till: Date;
 
   @CreateDateColumn()
-  createdAt: Date;
+  created_at: Date;
 
   @Column({ type: 'text', nullable: true })
   @Exclude()
-  currentHashedRefreshToken?: string;
+  current_hashed_refresh_token?: string;
 }

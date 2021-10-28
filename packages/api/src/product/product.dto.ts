@@ -22,7 +22,7 @@ export class CreateProductDto {
 
   @IsOptional()
   @IsString()
-  hsnCode?: string;
+  hsn_code?: string;
 
   @IsOptional()
   @IsNumber()

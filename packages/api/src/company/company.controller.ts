@@ -28,7 +28,7 @@ export class CompanyController {
 
   @Get('children')
   async getChildrenCompanies(@Req() request: RequestWithCompany) {
-    if (!request.user.isParent) throw new HttpException('Not a parent company', 400);
+    if (!request.user.is_parent) throw new HttpException('Not a parent company', 400);
 
     return this.companyService.getChildren(request.user.id);
   }

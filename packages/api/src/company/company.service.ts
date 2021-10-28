@@ -27,13 +27,13 @@ export class CompanyService {
   }
 
   public async createCompany(payload: CreateCompanyDto) {
-    const { parent, isParent, ...rest } = payload;
+    const { parent, is_parent, ...rest } = payload;
 
     const newCompany = await this.companyRepo.create({ ...rest }).save();
 
     const updatedCompany = this.updateCompany(newCompany.id, {
-      parent: { id: isParent ? newCompany.id : parent },
-      isParent,
+      parent: { id: is_parent ? newCompany.id : parent },
+      is_parent,
     });
 
     return updatedCompany;
@@ -76,7 +76,10 @@ export class CompanyService {
 
     const company = await this.getById(companyId);
 
-    const isRefreshTokenMatching = await compare(refreshToken, company.currentHashedRefreshToken);
+    const isRefreshTokenMatching = await compare(
+      refreshToken,
+      company.current_hashed_refresh_token,
+    );
 
     if (isRefreshTokenMatching) {
       return company;
@@ -84,16 +87,16 @@ export class CompanyService {
   }
 
   async setCurrentRefreshToken(refreshToken: string, companyId: number) {
-    const currentHashedRefreshToken = await hash(refreshToken, 10);
+    const current_hashed_refresh_token = await hash(refreshToken, 10);
 
     await this.companyRepo.update(companyId, {
-      currentHashedRefreshToken,
+      current_hashed_refresh_token,
     });
   }
 
   async removeRefreshToken(companyId: number) {
     return this.companyRepo.update(companyId, {
-      currentHashedRefreshToken: null,
+      current_hashed_refresh_token: null,
     });
   }
 }
