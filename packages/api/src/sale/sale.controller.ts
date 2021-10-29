@@ -1,13 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { RequestWithCompany } from 'src/auth/auth.interfaces';
+import { CreateSaleDto } from './sale.dto';
 import { SaleService } from './sale.service';
 
+@ApiTags('sale')
 @Controller('sale')
 export class SaleController {
   constructor(private readonly saleService: SaleService) {}
 
   @Post()
-  create(@Body() createSaleDto: any) {
-    return this.saleService.create(createSaleDto);
+  create(@Req() request: RequestWithCompany, @Body() saleData: CreateSaleDto) {
+    return this.saleService.create(request.user, saleData);
   }
 
   @Get()

@@ -38,14 +38,14 @@ export class CompanyEntity extends BaseEntity {
   @Column({ type: 'boolean', nullable: false, default: false })
   is_parent: boolean;
 
-  // @Column({ type: 'int', nullable: false })
-  // saleInvoiceCount;
+  @Column({ type: 'int', default: 1 })
+  sale_invoice_count: number;
 
-  // @Column({ type: 'int', nullable: false })
-  // purchaseInvoiceCount;
+  @Column({ type: 'int', default: 1 })
+  purchase_invoice_count: number;
 
-  // @Column({ type: 'int', nullable: false })
-  // estimateInvoiceCount;
+  @Column({ type: 'int', default: 1 })
+  estimate_invoice_count: number;
 
   //  @Column({ type: 'int', nullable: false })
   //   role;

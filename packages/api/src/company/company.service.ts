@@ -40,13 +40,9 @@ export class CompanyService {
   }
 
   public async updateCompany(companyId: number, payload: QueryDeepPartialEntity<CompanyEntity>) {
-    try {
-      await this.companyRepo.update(companyId, payload);
+    await this.companyRepo.update(companyId, payload);
 
-      return await this.getById(companyId);
-    } catch (error) {
-      throw new HttpException('Some error occured', 500);
-    }
+    return await this.getById(companyId);
   }
 
   public async getById(id: number) {
