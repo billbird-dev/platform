@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Commits
 
+- feat(api): transactions entity and APIs [`4509770`](https://github.com-soulsam480/BillBirdLLP/platform/commit/45097709b2cff7076bd19bed73effe8929e87b8c)
+- feat(api): sale. purchase preferences entity and APIs [`a37f22b`](https://github.com-soulsam480/BillBirdLLP/platform/commit/a37f22b6e006e06b48b89fd55fdb4e44f91f2d96)
+- chore(app): upgrade deps [`f6e2523`](https://github.com-soulsam480/BillBirdLLP/platform/commit/f6e2523df09ba37012de9438023a506a3d2f9c74)
+- chore: update changelog [`4165455`](https://github.com-soulsam480/BillBirdLLP/platform/commit/4165455fa41a5274ed51f84fe8936a27d8483695)
 - feat(api): purchase model and APIs [`412e36f`](https://github.com-soulsam480/BillBirdLLP/platform/commit/412e36f48102d5e8d765d81f1398acb490971b95)
 - feat(api): supplier entity and APIs [`2e22199`](https://github.com-soulsam480/BillBirdLLP/platform/commit/2e221998e0ea618748acc63eefc894e1ee754801)
 - feat(api): estimate entity, APIs [`23bbc51`](https://github.com-soulsam480/BillBirdLLP/platform/commit/23bbc5182be6c5d60e010f1fcd3a50672d3fa554)
