@@ -1,10 +1,16 @@
+import { IsNumber, IsObject, IsString } from 'class-validator';
 import { ProductEntity } from 'src/product/product.entity';
 
-export interface SaleItem {
+export class SaleItem {
+  @IsString()
   id: string;
+
+  @IsObject()
   product: ProductEntity;
-  invoice: string;
+
+  @IsNumber()
   quantity: number;
-  rate: number;
+
+  @IsNumber()
   amount: number;
 }

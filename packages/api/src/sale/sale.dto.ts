@@ -1,10 +1,18 @@
 import { PartialType } from '@nestjs/swagger';
-import { IsArray, IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsDateString,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { SaleItem } from './sate-item.interface';
 
 export class CreateSaleDto {
-  @IsDate()
-  date: Date;
+  @IsDateString()
+  date: Date = new Date();
 
   @IsNumber()
   customer: number;
@@ -48,6 +56,8 @@ export class CreateSaleDto {
   net_amount: number;
 
   @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SaleItem)
   items: SaleItem[];
 }
 

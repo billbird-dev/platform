@@ -12,6 +12,14 @@ import { SaleModule } from './sale/sale.module';
 @Module({
   controllers: [AppController],
   providers: [AppService],
-  imports: [DatabaseModule, ConfigModule.forRoot(), CompanyModule, AuthModule, InventoryModule, CustomerModule, SaleModule],
+  imports: [
+    DatabaseModule,
+    ConfigModule.forRoot(),
+    CompanyModule,
+    AuthModule,
+    InventoryModule,
+    CustomerModule,
+    SaleModule,
+  ],
 })
 export class AppModule {}
