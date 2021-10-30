@@ -10,6 +10,7 @@ import { CustomerModule } from './customer/customer.module';
 import { SaleModule } from './sale/sale.module';
 import { EstimateModule } from './estimate/estimate.module';
 import { SupplierModule } from './supplier/supplier.module';
+import { PurchaseModule } from './purchase/purchase.module';
 
 @Module({
   controllers: [AppController],
@@ -24,6 +25,7 @@ import { SupplierModule } from './supplier/supplier.module';
     SaleModule,
     EstimateModule,
     SupplierModule,
+    PurchaseModule,
   ],
 })
 export class AppModule {}

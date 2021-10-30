@@ -9,8 +9,6 @@ import {
   JoinColumn,
 } from 'typeorm';
 
-// import { ProductEntity } from '../product/product.entity';
-
 @Entity({ name: 'company' })
 export class CompanyEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
