@@ -9,6 +9,7 @@ import { InventoryModule } from './product/product.module';
 import { CustomerModule } from './customer/customer.module';
 import { SaleModule } from './sale/sale.module';
 import { EstimateModule } from './estimate/estimate.module';
+import { SupplierModule } from './supplier/supplier.module';
 
 @Module({
   controllers: [AppController],
@@ -22,6 +23,7 @@ import { EstimateModule } from './estimate/estimate.module';
     CustomerModule,
     SaleModule,
     EstimateModule,
+    SupplierModule,
   ],
 })
 export class AppModule {}
