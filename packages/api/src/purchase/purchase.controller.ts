@@ -12,6 +12,8 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { RequestWithCompany } from 'src/auth/auth.interfaces';
 import JwtAuthenticationGuard from 'src/auth/jwt-auth.guard';
+import { PurchasePreferencesDto } from 'src/preferences/preferences.dto';
+import { PreferencesService } from 'src/preferences/preferences.service';
 import { CreatePurchaseDto } from './purchase.dto';
 import { PurchaseService } from './purchase.service';
 
@@ -19,7 +21,10 @@ import { PurchaseService } from './purchase.service';
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('purchase')
 export class PurchaseController {
-  constructor(private readonly purchaseService: PurchaseService) {}
+  constructor(
+    private readonly purchaseService: PurchaseService,
+    private readonly prefService: PreferencesService,
+  ) {}
 
   @UseGuards(JwtAuthenticationGuard)
   @Post()
@@ -36,6 +41,18 @@ export class PurchaseController {
   @Get('invoice')
   findOne(@Query('company') company: number, @Query('id') id: number) {
     return this.purchaseService.findOne(company, id);
+  }
+
+  @UseGuards(JwtAuthenticationGuard)
+  @Get('preferences')
+  getPreferences(@Req() req: RequestWithCompany) {
+    return this.prefService.getPurchasePref(req.user.id);
+  }
+
+  @UseGuards(JwtAuthenticationGuard)
+  @Post('preferences')
+  managePrefs(@Req() req: RequestWithCompany, @Body() prefData: PurchasePreferencesDto) {
+    return this.prefService.createOrUpdatePurchasePref(req.user.id, prefData);
   }
 
   // @Patch(':id')

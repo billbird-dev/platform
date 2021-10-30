@@ -11,6 +11,7 @@ import { SaleModule } from './sale/sale.module';
 import { EstimateModule } from './estimate/estimate.module';
 import { SupplierModule } from './supplier/supplier.module';
 import { PurchaseModule } from './purchase/purchase.module';
+import { PreferencesModule } from './preferences/preferences.module';
 
 @Module({
   controllers: [AppController],
@@ -26,6 +27,7 @@ import { PurchaseModule } from './purchase/purchase.module';
     EstimateModule,
     SupplierModule,
     PurchaseModule,
+    PreferencesModule,
   ],
 })
 export class AppModule {}
