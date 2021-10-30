@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import dayjs from 'dayjs';
 import { CompanyWithParent } from 'src/auth/auth.interfaces';
 import { CompanyService } from 'src/company/company.service';
+import { TransactionsService } from 'src/transactions/transactions.service';
 import { Repository } from 'typeorm';
 import { CreatePurchaseDto } from './purchase.dto';
 import { PurchaseEntity } from './purchase.entity';
@@ -11,6 +12,7 @@ import { PurchaseEntity } from './purchase.entity';
 export class PurchaseService {
   constructor(
     private readonly companyService: CompanyService,
+    private readonly ledgerService: TransactionsService,
     @InjectRepository(PurchaseEntity) private readonly purchaseRepo: Repository<PurchaseEntity>,
   ) {}
 
@@ -40,6 +42,11 @@ export class PurchaseService {
       .save();
 
     if (!new_purchase_invoice) throw new HttpException('Unable to create purchase invoice', 500);
+
+    await this.ledgerService.debit(company.id, {
+      debit: new_purchase_invoice.net_amount,
+      purchase_bill: new_purchase_invoice.id,
+    });
 
     return new_purchase_invoice;
   }

@@ -8,6 +8,8 @@ import { CompanyEntity } from 'src/company/company.entity';
 import { PreferencesService } from 'src/preferences/preferences.service';
 import { SalePreferenceEntity } from 'src/preferences/sale-preferences.entity';
 import { PurchasePreferenceEntity } from 'src/preferences/purchase-preferences.entity';
+import { TransactionsEntity } from 'src/transactions/transaction.entity';
+import { TransactionsService } from 'src/transactions/transactions.service';
 
 @Module({
   imports: [
@@ -16,10 +18,11 @@ import { PurchasePreferenceEntity } from 'src/preferences/purchase-preferences.e
       CompanyEntity,
       SalePreferenceEntity,
       PurchasePreferenceEntity,
+      TransactionsEntity,
     ]),
   ],
   controllers: [SaleController],
-  providers: [SaleService, CompanyService, PreferencesService],
+  providers: [SaleService, CompanyService, PreferencesService, TransactionsService],
   exports: [SaleService],
 })
 export class SaleModule {}

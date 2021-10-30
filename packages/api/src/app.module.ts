@@ -12,6 +12,7 @@ import { EstimateModule } from './estimate/estimate.module';
 import { SupplierModule } from './supplier/supplier.module';
 import { PurchaseModule } from './purchase/purchase.module';
 import { PreferencesModule } from './preferences/preferences.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
   controllers: [AppController],
@@ -28,6 +29,7 @@ import { PreferencesModule } from './preferences/preferences.module';
     SupplierModule,
     PurchaseModule,
     PreferencesModule,
+    TransactionsModule,
   ],
 })
 export class AppModule {}

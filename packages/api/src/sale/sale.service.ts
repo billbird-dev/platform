@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import dayjs from 'dayjs';
 import { CompanyWithParent } from 'src/auth/auth.interfaces';
 import { CompanyService } from 'src/company/company.service';
+import { TransactionsService } from 'src/transactions/transactions.service';
 import { Repository } from 'typeorm';
 import { CreateSaleDto } from './sale.dto';
 import { SaleEntity } from './sale.entity';
@@ -11,6 +12,7 @@ import { SaleEntity } from './sale.entity';
 export class SaleService {
   constructor(
     private readonly companyService: CompanyService,
+    private readonly ledgerService: TransactionsService,
     @InjectRepository(SaleEntity) private readonly saleRepo: Repository<SaleEntity>,
   ) {}
 
@@ -40,6 +42,11 @@ export class SaleService {
       .save();
 
     if (!new_sale_invoice) throw new HttpException('Unable to create sale invoice', 500);
+
+    await this.ledgerService.credit(company.id, {
+      credit: new_sale_invoice.net_amount,
+      sale_bill: new_sale_invoice.id,
+    });
 
     return new_sale_invoice;
   }
