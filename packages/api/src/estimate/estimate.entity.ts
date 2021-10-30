@@ -10,10 +10,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { SaleItem } from './sate-item.interface';
+import { EstimateItem } from './estimate-item.interface';
 
-@Entity('sale')
-export class SaleEntity extends BaseEntity {
+@Entity('estimate')
+export class EstimateEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -50,27 +50,6 @@ export class SaleEntity extends BaseEntity {
   discount: number;
 
   @Column('float', { default: 0.0 })
-  taxable_amount: number;
-
-  @Column('float', { default: 0.0 })
-  cgst_percent: number;
-
-  @Column('float', { default: 0.0 })
-  sgst_percent: number;
-
-  @Column('float', { default: 0.0 })
-  igst_percent: number;
-
-  @Column('float', { default: 0.0 })
-  cgst_value: number;
-
-  @Column('float', { default: 0.0 })
-  sgst_value: number;
-
-  @Column('float', { default: 0.0 })
-  igst_value: number;
-
-  @Column('float', { default: 0.0 })
   net_amount: number;
 
   @Column({
@@ -79,7 +58,7 @@ export class SaleEntity extends BaseEntity {
     default: () => "'[]'",
     nullable: true,
   })
-  items: SaleItem[];
+  items: EstimateItem[];
 
   @CreateDateColumn()
   created_at: Date;

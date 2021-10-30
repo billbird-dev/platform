@@ -4,19 +4,19 @@ import dayjs from 'dayjs';
 import { CompanyWithParent } from 'src/auth/auth.interfaces';
 import { CompanyService } from 'src/company/company.service';
 import { Repository } from 'typeorm';
-import { CreateSaleDto } from './sale.dto';
-import { SaleEntity } from './sale.entity';
+import { CreateEstimateDto } from './estimate.dto';
+import { EstimateEntity } from './estimate.entity';
 
 @Injectable()
-export class SaleService {
+export class EstimateService {
   constructor(
     private readonly companyService: CompanyService,
-    @InjectRepository(SaleEntity) private readonly saleRepo: Repository<SaleEntity>,
+    @InjectRepository(EstimateEntity) private readonly estimateRepo: Repository<EstimateEntity>,
   ) {}
 
-  async create(company: CompanyWithParent, saleData: CreateSaleDto) {
+  async create(company: CompanyWithParent, estimateData: CreateEstimateDto) {
     const updated_company = await this.companyService.updateCompany(company.id, {
-      sale_invoice_count: company.sale_invoice_count + 1,
+      estimate_invoice_count: company.estimate_invoice_count + 1,
     });
 
     const invoice_name = `${(
@@ -28,24 +28,24 @@ export class SaleService {
       .map((e) => e[0])
       .join('')}${dayjs().format('YYYYMMDD')}`;
 
-    const invoice_number = `${invoice_name}-${updated_company.sale_invoice_count}`;
+    const invoice_number = `${invoice_name}-${updated_company.estimate_invoice_count}`;
 
-    const new_sale_invoice = await this.saleRepo
+    const new_estimate_invoice = await this.estimateRepo
       .create({
-        ...saleData,
+        ...estimateData,
         company: { id: updated_company.id },
         invoice_number,
-        customer: { id: saleData.customer },
+        customer: { id: estimateData.customer },
       })
       .save();
 
-    if (!new_sale_invoice) throw new HttpException('Unable to create sale invoice', 500);
+    if (!new_estimate_invoice) throw new HttpException('Unable to create estimate invoice', 500);
 
-    return new_sale_invoice;
+    return new_estimate_invoice;
   }
 
   async findAll(companyId: number) {
-    const sale_invoices = await this.saleRepo.find({
+    const estimate_invoices = await this.estimateRepo.find({
       where: { company: companyId },
       join: {
         alias: 'sale',
@@ -66,27 +66,27 @@ export class SaleService {
     //   .where('sale.company_id = :id', { id: companyId })
     //   .getMany();
 
-    if (!sale_invoices) throw new HttpException('No sale invoice found', 404);
+    if (!estimate_invoices) throw new HttpException('No estimate invoice was found', 404);
 
-    return sale_invoices;
+    return estimate_invoices;
   }
 
   async findOne(companyId: number, id: number) {
-    const sale_invoice = await this.saleRepo.findOne({
+    const estimate_invoice = await this.estimateRepo.findOne({
       where: { company: companyId, id },
       relations: ['customer', 'company'],
     });
 
-    if (!sale_invoice) throw new HttpException('Sale invoive not found', 404);
+    if (!estimate_invoice) throw new HttpException('No estimate invoice was found', 404);
 
-    return sale_invoice;
+    return estimate_invoice;
   }
 
-  // update(id: number, updateSaleDto: any) {
-  //   return `This action updates a #${id} sale`;
+  // update(id: number, updateEstimateDto: any) {
+  //   return `This action updates a #${id} estimate`;
   // }
 
   // remove(id: number) {
-  //   return `This action removes a #${id} sale`;
+  //   return `This action removes a #${id} estimate`;
   // }
 }
