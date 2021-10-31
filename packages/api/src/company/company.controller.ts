@@ -1,8 +1,10 @@
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
   HttpException,
+  Patch,
   Req,
   UseGuards,
   UseInterceptors,
@@ -10,6 +12,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { RequestWithCompany } from 'src/auth/auth.interfaces';
 import JwtAuthenticationGuard from 'src/auth/jwt-auth.guard';
+import { UpdateProfileDto } from './company.dto';
 import { CompanyService } from './company.service';
 
 @ApiTags('company')
@@ -24,6 +27,11 @@ export class CompanyController {
     if (!!request.user) return request.user;
 
     throw new HttpException('Company not found', 404);
+  }
+
+  @Patch()
+  updateCompany(@Req() req: RequestWithCompany, @Body() updateCompany: UpdateProfileDto) {
+    return this.companyService.updateCompany(req.user.id, updateCompany);
   }
 
   @Get('children')

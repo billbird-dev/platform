@@ -1,3 +1,4 @@
+import { OmitType, PartialType } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export interface FindCompany {
@@ -52,3 +53,7 @@ export class CreateCompanyDto {
   @IsString()
   state_code: string;
 }
+
+export class UpdateProfileDto extends PartialType(
+  OmitType(CreateCompanyDto, ['password', 'username', 'is_premium_member', 'is_parent', 'parent']),
+) {}
