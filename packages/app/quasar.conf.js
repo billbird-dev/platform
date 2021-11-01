@@ -51,7 +51,7 @@ module.exports = configure(function (/* ctx */) {
       vueRouterMode: process.env.NODE_ENV === 'production' ? 'history' : 'hash', // available values: 'hash', 'history'
       env: {
         // APP_API: 'https://omega.pythonanywhere.com',
-        ...keys,
+        APP_API: process.env.APP_API || require('dotenv').config().parsed['APP_API'] || '',
       },
       // transpile: false,
 
