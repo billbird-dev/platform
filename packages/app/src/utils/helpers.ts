@@ -177,3 +177,15 @@ export function useBillBirdApi<T>(path: string) {
     },
   };
 }
+
+export function getDiff<T extends Record<string, any>, K>(
+  toMatch: T,
+  newData: { [x in keyof T]?: T[x] },
+): Partial<T> {
+  return Object.entries(newData).reduce<Partial<T>>((acc, [key, value]) => {
+    if (!(value !== toMatch[key] && value.length > 0)) return acc;
+    acc = { ...acc, [key]: value };
+
+    return acc;
+  }, {});
+}

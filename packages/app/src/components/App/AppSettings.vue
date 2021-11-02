@@ -1,38 +1,38 @@
 <script setup lang="ts">
-import { User } from 'src/store/user';
-import { useBillBirdApi, useMainStore, useNotify } from 'src/utils/helpers';
+import { Company } from 'src/store/user';
+import { getDiff, useBillBirdApi, useMainStore, useNotify } from 'src/utils/helpers';
 import { ref, computed, onMounted } from 'vue';
 import AppInput from 'components/App/AppInput.vue';
 import { useQuasar } from 'quasar';
+import { updateCompany } from 'src/services/comany';
 
 const store = useMainStore();
 const { loading } = useQuasar();
 
 const GSTPrefs = ref({
-  cgst_percentage: 0,
-  sgst_percentage: 0,
-  igst_percentage: 0,
-  discount_percentage: 0,
+  cgst_percent: 0,
+  sgst_percent: 0,
+  igst_percent: 0,
+  discount_percent: 0,
 });
-const userData = computed((): User => store.getters['users/getUser']);
-const purchasePrefApi = useBillBirdApi('/purchase/preferences/');
-const salePrefApi = useBillBirdApi('/sale/preferences/');
-const userUpdated = ref<User>({});
+const companyData = computed((): Company => store.getters['users/getUser']);
+const purchasePrefApi = useBillBirdApi('/purchase/preferences');
+const salePrefApi = useBillBirdApi('/sale/preferences');
+const updatedCompany = ref({ ...companyData.value });
 const prefType = ref<'sale' | 'purchase'>('sale');
 const tab = ref('gst');
 const leftDrawer = ref(false);
 
 onMounted(async () => {
-  userUpdated.value = { ...userData.value };
   getPrefs();
 });
 
 function resetPrefs() {
   GSTPrefs.value = {
-    cgst_percentage: 0,
-    sgst_percentage: 0,
-    igst_percentage: 0,
-    discount_percentage: 0,
+    cgst_percent: 0,
+    sgst_percent: 0,
+    igst_percent: 0,
+    discount_percent: 0,
   };
 }
 
@@ -46,21 +46,29 @@ async function getPrefs() {
       res = (await salePrefApi.getAll()) as any;
       if (Object.keys(res).length === 0) return;
 
-      const { cgst_percentage, sgst_percentage, igst_percentage, discount_percentage } = res;
+      const { cgst_percent, sgst_percent, igst_percent, discount_percent } = res;
+
       GSTPrefs.value = {
-        discount_percentage,
-        igst_percentage,
-        sgst_percentage,
-        cgst_percentage,
+        discount_percent,
+        igst_percent,
+        sgst_percent,
+        cgst_percent,
       };
+
       return;
     }
 
     res = (await purchasePrefApi.getAll()) as any;
     if (Object.keys(res).length === 0) return;
 
-    const { cgst_percentage, sgst_percentage, igst_percentage, discount_percentage } = res;
-    GSTPrefs.value = { cgst_percentage, sgst_percentage, igst_percentage, discount_percentage };
+    const { cgst_percent, sgst_percent, igst_percent, discount_percent } = res;
+
+    GSTPrefs.value = {
+      cgst_percent,
+      sgst_percent,
+      igst_percent,
+      discount_percent,
+    };
   } catch (error) {
     resetPrefs();
   } finally {
@@ -80,6 +88,24 @@ async function setPrefs(type: 'sale' | 'purchase') {
     useNotify('positive', 'Updated successfully !');
   } catch (error) {
     useNotify('negative', error.response.statusText);
+  }
+}
+
+async function updateCompanyProfile() {
+  try {
+    loading.show();
+
+    const diff = getDiff(companyData.value, updatedCompany.value);
+
+    const { data } = await updateCompany(diff);
+
+    store.dispatch('users/USER', data, { root: true });
+
+    useNotify('positive', 'Updated successfully !');
+  } catch (error) {
+    useNotify('negative', 'Unable to update profile');
+  } finally {
+    loading.hide();
   }
 }
 </script>
@@ -173,28 +199,28 @@ async function setPrefs(type: 'sale' | 'purchase') {
                   :required="false"
                   labelFromName
                   type="number"
-                  v-model="GSTPrefs.cgst_percentage"
+                  v-model.number="GSTPrefs.cgst_percent"
                 />
                 <app-input
                   name="SGST"
                   :required="false"
                   labelFromName
                   type="number"
-                  v-model="GSTPrefs.sgst_percentage"
+                  v-model.number="GSTPrefs.sgst_percent"
                 />
                 <app-input
                   name="IGST"
                   :required="false"
                   labelFromName
                   type="number"
-                  v-model="GSTPrefs.igst_percentage"
+                  v-model.number="GSTPrefs.igst_percent"
                 />
                 <app-input
                   name="Discount"
                   :required="false"
                   labelFromName
                   type="number"
-                  v-model="GSTPrefs.discount_percentage"
+                  v-model.number="GSTPrefs.discount_percent"
                 />
               </div>
 
@@ -217,51 +243,64 @@ async function setPrefs(type: 'sale' | 'purchase') {
               <div class="text-caption">manage your profile</div>
             </div>
 
-            <q-form>
+            <q-form @submit.prevent="updateCompanyProfile">
               <div class="q-pt-none q-gutter-y-xs">
                 <app-input
                   name="Name"
                   :required="false"
                   labelFromName
                   hint="Changing this will affect the Tax invoice numbering."
-                  v-model="userUpdated.name"
+                  v-model="updatedCompany.name"
                 />
                 <app-input
                   name="Mobile no."
                   :required="false"
                   labelFromName
                   type="number"
-                  v-model="userUpdated.phone"
+                  v-model="updatedCompany.phone"
                 />
                 <app-input
                   name="Email"
                   :required="false"
                   labelFromName
-                  v-model="userUpdated.email"
+                  v-model="updatedCompany.email"
                 />
                 <app-input
                   name="Branch"
                   :required="false"
                   labelFromName
-                  v-model="userUpdated.branch"
+                  v-model="updatedCompany.branch"
                 />
                 <app-input
                   name="Address"
                   :required="false"
                   labelFromName
-                  v-model="userUpdated.address"
+                  v-model="updatedCompany.address"
                 />
-                <app-input name="City" :required="false" labelFromName v-model="userUpdated.city" />
+                <app-input
+                  name="City"
+                  :required="false"
+                  labelFromName
+                  v-model="updatedCompany.city"
+                />
                 <app-input
                   name="Pin code"
                   :required="false"
                   labelFromName
-                  v-model="userUpdated.pin_code"
+                  v-model="updatedCompany.pincode"
                 />
               </div>
 
               <div class="flex justify-end">
-                <q-btn label="Save" no-caps color="primary" unelevated text-color="dark" />
+                <q-btn
+                  type="submit"
+                  label="Save"
+                  no-caps
+                  color="primary"
+                  unelevated
+                  text-color="dark"
+                  :disable="!Object.keys(getDiff(companyData, updatedCompany)).length"
+                />
               </div>
             </q-form>
           </q-tab-panel>
