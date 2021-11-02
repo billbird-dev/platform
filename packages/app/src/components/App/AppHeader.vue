@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { User } from 'src/store/user';
+import { Company } from 'src/store/user';
 import { computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
@@ -11,7 +11,7 @@ const router = useRouter();
 
 defineEmits(['toggle-drawer']);
 
-const user = computed((): User => store.getters['users/getUser']);
+const user = computed((): Company => store.getters['users/getUser']);
 const isLoggedIn = computed((): boolean => store.getters['users/isLoggedIn']);
 
 async function logout() {

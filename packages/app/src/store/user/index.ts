@@ -3,30 +3,32 @@ import { Module } from 'vuex';
 import { StateInterface } from 'src/store/index';
 import { Loading } from 'quasar';
 
-export interface User {
-  id?: string;
-  last_login?: Date;
-  username?: string;
-  email?: string;
-  is_active?: boolean;
-  date_joined?: Date;
-  name?: string;
-  phone?: number;
-  is_premium_member?: boolean;
-  branch?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  pin_code?: string;
-  gstin?: string;
-  state_code?: string;
-  parent_company?: string;
-  role?: string;
+export interface Company {
+  id: number;
+  username: string;
+  name: string;
+  email: string;
+  phone: number;
+  is_premium_member: boolean;
+  is_parent: boolean;
+  sale_invoice_count: number;
+  purchase_invoice_count: number;
+  estimate_invoice_count: number;
+  parent: Partial<Company>;
+  branch: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: number;
+  gstin: string;
+  state_code: string;
+  valid_till: Date;
+  created_at: Date;
 }
 
 export interface userStateInterface {
   isLoggedIn: boolean;
-  data: User;
+  data: Company;
 }
 
 const userModule: Module<userStateInterface, StateInterface> = {
@@ -34,14 +36,14 @@ const userModule: Module<userStateInterface, StateInterface> = {
   state: (): userStateInterface => {
     return {
       isLoggedIn: false,
-      data: {},
+      data: {} as any,
     };
   },
   mutations: {
     setLogin: (state, paylaod: boolean) => {
       state.isLoggedIn = paylaod;
     },
-    setUser: (state, payload: Record<string, any>) => {
+    setUser: (state, payload: Company) => {
       state.data = payload;
     },
   },
@@ -60,25 +62,17 @@ const userModule: Module<userStateInterface, StateInterface> = {
 
         try {
           const {
-            data: { company, access, refresh },
-          } = await api({
-            url: '/auth/login/',
-            method: 'post',
-            data: {
-              ...payload,
-            },
+            data: { company, token },
+          } = await api.post<{ company: Company; token: string }>('/auth/login', {
+            ...payload,
           });
 
-          const user = company;
-          dispatch('USER', user);
+          dispatch('USER', company);
+          setToken(token);
 
-          setToken(access);
-          document.cookie = `__btoken=${refresh as string};max-age=259200`;
-
-          resolve(user);
+          resolve(company);
         } catch (error) {
           await dispatch('USER', null);
-          setToken(null);
 
           reject((error as any).response.data.detail);
         } finally {
@@ -87,10 +81,13 @@ const userModule: Module<userStateInterface, StateInterface> = {
       });
     },
     async LOGOUT({ dispatch }) {
-      await dispatch('USER', null);
-
-      setToken(null);
-      document.cookie = '__btoken=delete;max-age=0';
+      try {
+        setToken(null);
+        await dispatch('USER', null);
+        await api.post('/auth/log-out');
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
   getters: {

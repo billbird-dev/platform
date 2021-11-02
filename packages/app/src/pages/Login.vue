@@ -4,11 +4,7 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { useNotify } from 'src/utils/helpers';
 import AppInput from 'src/components/App/AppInput.vue';
-
-interface UserLogin {
-  username?: string;
-  password?: string;
-}
+import { LoginDto } from 'src/types/dtos';
 
 const store = useStore();
 const router = useRouter();
@@ -16,14 +12,22 @@ const router = useRouter();
 const isLoggedIn = computed((): boolean => store.getters['users/isLoggedIn']);
 const isForgotPassword = ref(false);
 const forgotUserEmail = ref('');
-const user = ref<UserLogin>({
+const user = ref({
   username: '',
   password: '',
 });
 
 const login = async () => {
   try {
-    await store.dispatch('users/LOGIN', user.value);
+    const payload: LoginDto = {
+      password: user.value.password,
+      key: {
+        email: user.value.username.includes('@') ? user.value.username : undefined,
+        username: !user.value.username.includes('@') ? user.value.username : undefined,
+      },
+    };
+
+    await store.dispatch('users/LOGIN', payload);
 
     router.push('/home');
     useNotify('positive', 'Logged in successfully');
@@ -32,6 +36,7 @@ const login = async () => {
       username: '',
       password: '',
     };
+
     useNotify('negative', error);
   }
 };
@@ -90,7 +95,7 @@ const login = async () => {
           <q-input
             standout
             v-model="user.username"
-            placeholder="Username"
+            placeholder="Username/Email"
             lazy-rules
             :rules="[(val) => (val && val.length > 0) || 'Please enter username']"
             dense

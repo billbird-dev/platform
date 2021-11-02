@@ -7,7 +7,7 @@ import {
 } from 'vue-router';
 import { StateInterface } from 'src/store';
 import routes from 'src/router/routes';
-import { getCookie } from 'src/utils/helpers';
+import { LocalStorage } from 'quasar';
 
 /*
  * If not building with SSR mode, you can
@@ -33,7 +33,7 @@ export default route<StateInterface>((/* { store, ssrContext } */) => {
   });
 
   Router.beforeEach((to, _, next) => {
-    const isLoggedIn = () => getCookie('__btoken');
+    const isLoggedIn = () => LocalStorage.getItem<string>('__bt');
 
     if (['Landing', 'Login'].includes(to.name as string)) {
       if (isLoggedIn()) {

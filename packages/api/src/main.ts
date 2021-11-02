@@ -10,6 +10,13 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: true }),
+    {
+      cors: {
+        origin: ['http://localhost:8080'],
+        credentials: true,
+        exposedHeaders: ['set-cookie'],
+      },
+    },
   );
 
   app.useGlobalPipes(
@@ -26,7 +33,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .addBasicAuth()
-    .addCookieAuth('__Host-Authentication')
+    .addCookieAuth('__bta')
     .setTitle('BillBird API')
     .setDescription('BillBird platform API')
     .setVersion('1.0')

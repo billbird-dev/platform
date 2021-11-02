@@ -70,7 +70,7 @@ export class AuthService {
       expiresIn: '15m',
     });
 
-    return `__Host-Authentication=${token}; HttpOnly; Path=/; Max-Age=900`;
+    return `__bta=${token}; HttpOnly; Secure; Path=/; Max-Age=900`;
   }
 
   public getCookieWithJwtRefreshToken(companyId: number) {
@@ -80,7 +80,7 @@ export class AuthService {
       expiresIn: '7d',
     });
 
-    const cookie = `__Host-Refresh=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}`;
+    const cookie = `__btar=${token}; HttpOnly; Secure; Path=/; Max-Age=${7 * 24 * 60 * 60}`;
 
     return {
       cookie,
@@ -90,8 +90,8 @@ export class AuthService {
 
   public getCookiesForLogOut() {
     return [
-      '__Host-Authentication=; HttpOnly; Path=/; Max-Age=0',
-      '__Host-Refresh=; HttpOnly; Path=/; Max-Age=0',
+      `__bta=; HttpOnly; Secure; Path=/; Max-Age=0`,
+      `__btar=; HttpOnly; Secure; Path=/; Max-Age=0`,
     ];
   }
 }

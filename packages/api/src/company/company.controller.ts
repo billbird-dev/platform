@@ -10,7 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { RequestWithCompany } from 'src/auth/auth.interfaces';
+import { CompanyWithParent, RequestWithCompany } from 'src/auth/auth.interfaces';
 import JwtAuthenticationGuard from 'src/auth/jwt-auth.guard';
 import { UpdateProfileDto } from './company.dto';
 import { CompanyService } from './company.service';
@@ -23,7 +23,7 @@ export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Get()
-  async getProfile(@Req() request: RequestWithCompany) {
+  async getProfile(@Req() request: RequestWithCompany): Promise<CompanyWithParent> {
     if (!!request.user) return request.user;
 
     throw new HttpException('Company not found', 404);

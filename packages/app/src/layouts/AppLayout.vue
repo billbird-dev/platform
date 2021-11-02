@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, watchEffect } from 'vue';
 import { useStore } from 'vuex';
-import axios from 'axios';
 
 import AppDrawer from 'components/App/AppDrawer.vue';
 import AppHeader from 'components/App/AppHeader.vue';
-import { setToken } from 'src/boot/axios';
-import { getCookie, useMainRouter, useNotify } from 'src/utils/helpers';
-import { useQuasar } from 'quasar';
+import { api } from 'src/boot/axios';
+import { useMainRouter, useNotify } from 'src/utils/helpers';
+import { LocalStorage, useQuasar } from 'quasar';
 import { getTokens } from 'src/composables/auth';
+import { Company } from 'src/store/user';
 
 const store = useStore();
 const { loading } = useQuasar();
@@ -20,25 +20,18 @@ const isInit = ref(false);
 const interval = ref<NodeJS.Timeout | null>(null);
 
 async function authUser() {
-  const rtoken = getCookie('__btoken') as string;
+  const rtoken = () => LocalStorage.getItem<string>('__bt');
 
-  if (!rtoken || !rtoken.length) return (isInit.value = true);
+  if (!rtoken()) return (isInit.value = true);
 
   try {
     loading.show();
 
-    const { access } = await getTokens();
+    await getTokens();
 
-    const companyResponse = await axios({
-      baseURL: process.env.APP_API,
-      url: '/auth/company/',
-      method: 'get',
-      headers: {
-        Authorization: `Bearer ${access}`,
-      },
-    });
+    const { data } = await api.get<Company>('/company');
 
-    await store.dispatch('users/USER', companyResponse.data[0]);
+    await store.dispatch('users/USER', data);
 
     tokenWatcher();
 
@@ -49,7 +42,6 @@ async function authUser() {
 
     if (interval.value) clearInterval(interval.value);
 
-    setToken(null);
     await store.dispatch('users/LOGOUT');
     push('/');
 
@@ -60,9 +52,9 @@ async function authUser() {
 }
 
 function tokenWatcher() {
-  const rtoken = getCookie('__btoken') as string;
+  const rtoken = () => LocalStorage.getItem<string>('__bt');
 
-  if (!rtoken || !rtoken.length) return;
+  if (!rtoken()) return;
 
   if (interval.value) clearInterval(interval.value);
 

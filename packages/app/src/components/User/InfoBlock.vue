@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { User } from 'src/store/user';
+import { Company } from 'src/store/user';
 import { useMainStore } from 'src/utils/helpers';
 
 const store = useMainStore();
 
 defineProps<{
-  user: User;
+  user: Company;
 }>();
 
 function setSettings() {
@@ -70,7 +70,7 @@ function setSettings() {
           </div>
           <div class="text-xs text-blue-grey-9">
             <b>PIN :</b>
-            {{ user.pin_code }}
+            {{ user.pincode }}
           </div>
         </div>
       </div>

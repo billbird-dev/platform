@@ -15,7 +15,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-ref
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          return request?.cookies?.['__Host-Refresh'];
+          return request?.cookies?.['__btar'];
         },
       ]),
       secretOrKey: configService.get('JWT_REFRESH_TOKEN_SECRET'),
@@ -24,7 +24,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-ref
   }
 
   async validate(request: Request, payload: TokenPayload) {
-    const refreshToken = request.cookies?.['__Host-Refresh'];
+    const refreshToken = request.cookies?.['__btar'];
     return this.companyService.getCompanyIfRefreshTokenMatches(refreshToken, payload.companyId);
   }
 }

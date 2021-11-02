@@ -9,7 +9,7 @@
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { configure } = require('quasar/wrappers');
-const keys = require('./keys');
+
 module.exports = configure(function (/* ctx */) {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
@@ -48,7 +48,8 @@ module.exports = configure(function (/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      vueRouterMode: process.env.NODE_ENV === 'production' ? 'history' : 'hash', // available values: 'hash', 'history'
+      // vueRouterMode: process.env.NODE_ENV === 'production' ? 'history' : 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history',
       env: {
         // APP_API: 'https://omega.pythonanywhere.com',
         APP_API: process.env.APP_API || require('dotenv').config().parsed['APP_API'] || '',

@@ -1,25 +1,25 @@
 import { boot } from 'quasar/wrappers';
 import axios, { AxiosError } from 'axios';
-import { getCookie, useNotify } from 'src/utils/helpers';
+import { useNotify } from 'src/utils/helpers';
 import { getTokens } from 'src/composables/auth';
-import { Loading } from 'quasar';
+import { Loading, LocalStorage } from 'quasar';
 
-export const api = axios.create({ baseURL: process.env.APP_API });
+export const api = axios.create({ baseURL: process.env.APP_API, withCredentials: true });
 
 export const setToken = (token: string | null) => {
-  api.defaults.headers['Authorization'] = !!token ? `Bearer ${token}` : null;
+  if (token === null) return LocalStorage.remove('__bt');
+  LocalStorage.set('__bt', token);
 };
 
 //TODO: test this
 export default boot(({ store, router }) => {
   async function refreshTokens() {
-    const rtoken = () => getCookie('__btoken');
+    const rtoken = () => LocalStorage.getItem<string>('__bt');
 
     if (!rtoken()) {
       useNotify('negative', 'Session expired. Please login again.');
 
       await store.dispatch('users/LOGOUT');
-      setToken(null);
       router.push('/');
       return;
     }
@@ -32,7 +32,6 @@ export default boot(({ store, router }) => {
       useNotify('negative', 'Session expired. Please login again.');
 
       await store.dispatch('users/LOGOUT');
-      setToken(null);
 
       router.push('/');
     } finally {
