@@ -31,8 +31,8 @@ export class SupplierEntity extends BaseEntity {
   @Column({ type: 'varchar', nullable: true, length: 254 })
   email: string;
 
-  @Column({ type: 'bigint', nullable: false })
-  phone: number;
+  @Column({ type: 'text', nullable: true })
+  phone: string;
 
   @Column({ length: 30, type: 'varchar' })
   gstin: string;

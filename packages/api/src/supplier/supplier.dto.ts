@@ -9,9 +9,9 @@ export class CreateSupplierDto {
   @IsOptional()
   email?: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  phone?: number;
+  phone?: string;
 
   @IsString()
   gstin: string;
