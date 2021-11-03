@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted, watchEffect } from 'vue';
+import { ref, onMounted, watchEffect, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useQuasar } from 'quasar';
-import { useBillBirdApi, useNotify } from 'src/utils/helpers';
+import { formatDate, useNotify } from 'src/utils/helpers';
+import { api } from 'src/boot/axios';
+import { useStore } from 'vuex';
+import { Company } from 'src/store/user';
 
 const route = useRoute();
 const { loading } = useQuasar();
 
-const BillApi =
-  useBillBirdApi<Record<string, string | number | Record<string, any>>>('/sale/bill/');
-const PurchaseApi =
-  useBillBirdApi<Record<string, string | number | Record<string, any>>>('/purchase/purchase/');
-const EstimateApi =
-  useBillBirdApi<Record<string, string | number | Record<string, any>>>('/sale/estimate/');
+const store = useStore();
+
+const user = computed((): Company => store.getters['users/getUser']);
 
 const invoice = ref<Record<string, any | Record<string, any>>>({
   supplier: {},
@@ -42,7 +42,10 @@ async function getInvoice() {
   isLoading.value = true;
 
   try {
-    const data = await BillApi.getById(route.params.id as string);
+    const { data } = await api.get('/sale/invoice', {
+      params: { id: route.params.id, company: user.value.id },
+    });
+
     invoice.value = data;
   } catch (error) {
     console.log(error);
@@ -56,7 +59,10 @@ async function getEstimate() {
   isLoading.value = true;
 
   try {
-    const data = await EstimateApi.getById(route.params.id as string);
+    const { data } = await api.get('/estimate/invoice', {
+      params: { id: route.params.id, company: user.value.id },
+    });
+
     invoice.value = data;
   } catch (error) {
     console.log(error);
@@ -70,7 +76,10 @@ async function getPurchase() {
   isLoading.value = true;
 
   try {
-    const data = await PurchaseApi.getById(route.params.id as string);
+    const { data } = await api.get('/purchase/invoice', {
+      params: { id: route.params.id, company: user.value.id },
+    });
+
     invoice.value = data;
   } catch (error) {
     console.log(error);
@@ -104,7 +113,7 @@ function print() {
         <div class="col-sm-6 col-md-6 col-xs-6" style="text-align: right">
           <p>
             <b>Invoice Date :</b>
-            {{ invoice.date }}
+            {{ formatDate(invoice.date) }}
           </p>
           <p>
             <b>Invoice No. :</b>
@@ -187,7 +196,7 @@ function print() {
         </thead>
         <tbody>
           <template v-if="$route.path.includes('bill')">
-            <tr v-for="i in invoice.sale_item" :key="i.id">
+            <tr v-for="i in invoice.items" :key="i.id">
               <td>{{ i.product.name }}</td>
               <td>{{ i.product.hsn_code }}</td>
               <td>{{ i.quantity }} {{ i.product.unit }}</td>
@@ -201,7 +210,7 @@ function print() {
             </tr>
           </template>
           <template v-else-if="$route.path.includes('estimate')">
-            <tr v-for="i in invoice.estimate_item" :key="i.id">
+            <tr v-for="i in invoice.items" :key="i.id">
               <td>{{ i.product.name }}</td>
               <td>{{ i.product.hsn_code }}</td>
               <td>{{ i.quantity }} {{ i.product.unit }}</td>
@@ -212,7 +221,7 @@ function print() {
             </tr>
           </template>
           <template v-else>
-            <tr v-for="i in invoice.purchase_item" :key="i.id">
+            <tr v-for="i in invoice.items" :key="i.id">
               <td>{{ i.product.name }}</td>
               <td>{{ i.product.hsn_code }}</td>
               <td>{{ i.quantity }} {{ i.product.unit }}</td>

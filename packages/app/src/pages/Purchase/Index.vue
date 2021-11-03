@@ -2,27 +2,26 @@
 import { date, QForm, useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 import { ref, watchEffect } from 'vue';
-
 import CustomerBlock from 'components/Bill/CustomerBlock.vue';
 import InvoiceRow from 'components/Bill/InvoiceRow.vue';
-import { InvoiceItem, ProductModel, PurchaseModel, SupplierModel } from 'src/types/interfaces';
+import { ProductModel, PurchaseModel, SupplierModel } from 'src/types/interfaces';
 import { BillColumns } from 'src/utils/constants';
 import AppInput from 'components/App/AppInput.vue';
-import { useBillBirdApi, useNotify, useSwr } from 'src/utils/helpers';
+import { randomId, useBillBirdApi, useNotify, useSwr } from 'src/utils/helpers';
 
 const router = useRouter();
 const { loading } = useQuasar();
 
-const { getAll: supplierGetAll } = useBillBirdApi<SupplierModel>('/purchase/supplier/');
-const { getAll: inventoryGetAll } = useBillBirdApi<ProductModel>('/inventory/');
-const { createEntity } = useBillBirdApi<PurchaseModel>('/purchase/purchase/');
+const { getAll: supplierGetAll } = useBillBirdApi<SupplierModel>('/supplier');
+const { getAll: inventoryGetAll } = useBillBirdApi<ProductModel>('/inventory');
+const { createEntity } = useBillBirdApi<PurchaseModel>('/purchase');
 
-const { data: Suppliers } = useSwr<SupplierModel>('/purchase/supplier/', supplierGetAll);
-const { data: Products } = useSwr<ProductModel>('/inventory/', inventoryGetAll);
+const { data: Suppliers } = useSwr<SupplierModel>('/supplier', supplierGetAll);
+const { data: Products } = useSwr<ProductModel>('/inventory', inventoryGetAll);
 
 const form = ref<null | QForm>(null);
 const invoiceData = ref<PurchaseModel>({
-  invoice_number: Math.random().toString(36).substring(7).toUpperCase(),
+  invoice_number: randomId(),
   igst_percent: 0,
   cgst_value: 0,
   sgst_value: 0,
@@ -35,11 +34,9 @@ const invoiceData = ref<PurchaseModel>({
   taxable_amount: 0,
   gross_total: 0,
   date: date.formatDate(new Date(), 'YYYY-MM-DD'),
-  supplier: '',
   purchase_item: [
     {
-      serial: 'b3jb',
-      product: '',
+      id: randomId(),
       rate: 0,
       quantity: 1,
       amount: 1,
@@ -48,14 +45,16 @@ const invoiceData = ref<PurchaseModel>({
 });
 
 const calTotal = () => {
-  invoiceData.value.net_amount = (invoiceData.value.purchase_item as InvoiceItem[]).reduce(
+  invoiceData.value.net_amount = invoiceData.value.purchase_item.reduce(
     (acc, item) => acc + (item as any).amount,
     0,
   );
+
   if (invoiceData.value.igst_percent !== 0) {
     invoiceData.value.sgst_percent = 0;
     invoiceData.value.cgst_percent = 0;
   }
+
   if (invoiceData.value.discount_percent !== 0) {
     invoiceData.value.discount =
       ((invoiceData.value.discount_percent as number) / 100) * invoiceData.value.net_amount;
@@ -96,16 +95,15 @@ const calTotal = () => {
 };
 
 const removeRow = (index: string): void => {
-  invoiceData.value.purchase_item?.splice(
-    invoiceData.value.purchase_item?.findIndex((el) => el.serial === index),
+  invoiceData.value.purchase_item.splice(
+    invoiceData.value.purchase_item.findIndex((el) => el.id === index),
     1,
   );
 };
 
 const addRow = (): void => {
-  invoiceData.value.purchase_item?.push({
-    serial: Math.random().toString(36).substring(7),
-    product: '',
+  invoiceData.value.purchase_item.push({
+    id: randomId(),
     rate: 0,
     quantity: 1,
     amount: 1,
@@ -118,12 +116,11 @@ async function createPurchaseInvoice() {
 
     if (!res) return useNotify('negative', 'Please fill the required fields !');
 
-    if (!invoiceData.value.supplier?.length)
-      return useNotify('negative', 'Please fill supplier Data !');
+    if (!invoiceData.value.supplier) return useNotify('negative', 'Please fill supplier Data !');
 
     if (!invoiceData.value.date?.length) return useNotify('negative', 'Please fill invoice Date !');
 
-    if (invoiceData.value.purchase_item?.some((el) => !el.product?.length))
+    if (invoiceData.value.purchase_item.some((el) => !el.product))
       return useNotify('negative', 'Please select a product !');
 
     loading.show();
@@ -138,16 +135,30 @@ async function createPurchaseInvoice() {
   }
 }
 
-watchEffect(() => {
-  calTotal();
-});
+watchEffect(calTotal);
 
 watchEffect(() => {
-  if ((invoiceData.value.purchase_item as InvoiceItem[]).length < 1) {
+  if (invoiceData.value.purchase_item.length < 1) {
     useNotify('negative', "Items can't be empty !");
     addRow();
   }
 });
+interface CustomerPayload {
+  customer?: number;
+  billing_address?: string;
+  shipping_address?: string;
+}
+
+function selectCustomer(payload: CustomerPayload) {
+  invoiceData.value = {
+    ...invoiceData.value,
+    supplier: payload.customer,
+  };
+}
+
+function setDate(date: string) {
+  invoiceData.value.date = date;
+}
 </script>
 
 <template>
@@ -155,7 +166,13 @@ watchEffect(() => {
     <p class="text-h4 q-pt-md q-pb-lg page-header">
       <b>New Purchase</b>
     </p>
-    <customer-block :invoiceData="invoiceData" :date="invoiceData.date" :Customers="Suppliers" />
+    <customer-block
+      :invoiceData="invoiceData"
+      :date="invoiceData.date"
+      :customers="Suppliers || []"
+      @selected:customer="selectCustomer"
+      @selected:date="setDate"
+    />
     <q-form ref="form" greedy>
       <div class="b-table">
         <table class="b-table__native">
@@ -170,12 +187,12 @@ watchEffect(() => {
           <tbody>
             <invoice-row
               v-for="(row, index) in invoiceData.purchase_item"
-              :key="row.serial"
+              :key="row.id"
               :index="index"
-              :rowData="row"
+              :row-data="row"
               @remove-row="removeRow($event)"
               @add-row="addRow"
-              :productList="Products"
+              :product-list="Products"
             />
           </tbody>
         </table>

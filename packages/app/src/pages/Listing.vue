@@ -2,11 +2,11 @@
 import { ref, onMounted, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import { useQuasar } from 'quasar';
-
+import { formatDate } from 'src/utils/helpers';
 import { InvoiceListingColumns, PurchaseListingColumns } from 'src/utils/constants';
 import { firstCapitalize, useBillBirdApi, useNotify } from 'src/utils/helpers';
 
-const initialPagination = {
+const INITIAL_PAGINATION = {
   sortBy: 'date',
   descending: true,
   page: 1,
@@ -16,9 +16,9 @@ const initialPagination = {
 const route = useRoute();
 const { loading } = useQuasar();
 
-const BillApi = useBillBirdApi('/sale/bill/');
-const PurchaseApi = useBillBirdApi('/purchase/purchase/');
-const EstimateApi = useBillBirdApi<any>('/sale/estimate/');
+const BillApi = useBillBirdApi('/sale');
+const PurchaseApi = useBillBirdApi('/purchase');
+const EstimateApi = useBillBirdApi<any>('/estimate');
 
 const state = ref<any[]>();
 const filter = ref('');
@@ -104,9 +104,9 @@ async function getPurchase() {
         :filter="filter"
         :rows="state"
         :dense="$q.screen.width < 700"
-        :pagination="initialPagination"
+        :pagination="INITIAL_PAGINATION"
       >
-        <template v-slot:top>
+        <template #top>
           <q-space />
           <q-input
             :class="{ 'full-width': $q.screen.width < 700 }"
@@ -118,12 +118,13 @@ async function getPurchase() {
             :placeholder="`Search all ${$route.path.split('/')[1]}s`"
             hint="Search by invoice no., date, customer or supplier name."
           >
-            <template v-slot:append>
+            <template #append>
               <q-icon name="search" color="dark" />
             </template>
           </q-input>
         </template>
-        <template v-slot:header="props">
+
+        <template #header="props">
           <q-tr :props="props" class="bg-primary" no-hover>
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
               {{ col.label }}
@@ -131,12 +132,18 @@ async function getPurchase() {
             <q-th auto-width></q-th>
           </q-tr>
         </template>
-        <template v-slot:body="props">
+
+        <template #body="props">
           <q-tr :props="props" no-hover>
             <q-td v-for="col in props.cols" :key="col.name" :props="props">
-              <template v-if="col.name === 'supplier' || col.name === 'customer'">
+              <template v-if="col.name === 'date'">
+                {{ formatDate(props.row[col.name]) }}
+              </template>
+
+              <template v-else-if="col.name === 'supplier' || col.name === 'customer'">
                 {{ props.row[col.name].name }}
               </template>
+
               <template v-else>
                 {{ props.row[col.name] ? props.row[col.name] : 'N/A' }}
               </template>
@@ -151,7 +158,7 @@ async function getPurchase() {
                     : `/invoice/purchase/${props.row.id}`
                 "
               >
-                <q-icon size="sm" name="las la-print"></q-icon>
+                <q-icon size="sm" name="las la-print" />
               </router-link>
             </q-td>
           </q-tr>

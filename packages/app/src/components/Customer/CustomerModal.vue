@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CustomerBlock } from 'src/types/interfaces';
+import { Customer } from 'src/types/interfaces';
 import AppInput from 'components/App/AppInput.vue';
 import { useNotify } from 'src/utils/helpers';
 import AppDeleteButton from 'components/App/AppDeleteButton.vue';
@@ -24,7 +24,7 @@ const emit = defineEmits([
 defineProps<{
   customerModal: boolean;
   isEditMode: boolean;
-  newCustomer: CustomerBlock;
+  newCustomer: Customer;
 }>();
 
 const form = ref<null | QForm>(null);

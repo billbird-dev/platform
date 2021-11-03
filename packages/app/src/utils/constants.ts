@@ -1,6 +1,6 @@
 import { NavModel } from 'src/types/interfaces';
 
-export const CustomerTableColumns = [
+export const CustomerTableColumns: any[] = [
   {
     name: 'name',
     required: true,
@@ -26,7 +26,7 @@ export const CustomerTableColumns = [
     sortable: true,
   },
 ];
-export const InvoiceListingColumns = [
+export const InvoiceListingColumns: any[] = [
   {
     name: 'date',
     required: true,
@@ -94,7 +94,7 @@ export const PurchaseListingColumns = [
     sortable: true,
   },
 ];
-export const InventoryTableColumns = [
+export const InventoryTableColumns: any[] = [
   {
     name: 'name',
     required: true,

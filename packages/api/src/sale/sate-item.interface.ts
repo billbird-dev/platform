@@ -13,4 +13,7 @@ export class SaleItem {
 
   @IsNumber()
   amount: number;
+
+  @IsNumber()
+  rate: number;
 }

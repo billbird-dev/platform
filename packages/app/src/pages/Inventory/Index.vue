@@ -3,7 +3,7 @@ import { ref, watchEffect } from 'vue';
 import { InventoryTableColumns } from 'src/utils/constants';
 import { ProductModel } from 'src/types/interfaces';
 import AppInput from 'components/App/AppInput.vue';
-import { useBillBirdApi, useNotify, useSwr } from 'src/utils/helpers';
+import { getDiff, useBillBirdApi, useNotify, useSwr } from 'src/utils/helpers';
 import { QForm, useQuasar } from 'quasar';
 import AppDeleteButton from 'components/App/AppDeleteButton.vue';
 
@@ -14,17 +14,39 @@ const initialPagination = {
   rowsPerPage: 20,
 };
 const { getAll, createEntity, updateEntity, removeEntity } =
-  useBillBirdApi<ProductModel>('/inventory/');
+  useBillBirdApi<ProductModel>('/inventory');
 const { loading } = useQuasar();
 
 const filter = ref('');
 const productModal = ref(false);
-const newProduct = ref<ProductModel>({});
+const newProduct = ref<ProductModel>({
+  brand: '',
+  code: '',
+  description: '',
+  hsn_code: '',
+  name: '',
+  quantity: 0,
+  rate: 0,
+  unit: 'pcs',
+});
+
+const resetProduct = () =>
+  (newProduct.value = {
+    brand: '',
+    code: '',
+    description: '',
+    hsn_code: '',
+    name: '',
+    quantity: 0,
+    rate: 0,
+    unit: 'pcs',
+  });
+
 const form = ref<null | QForm>(null);
 const isEditMode = ref(false);
 const { data, mutate, isValidating } = useSwr<ProductModel>('/inventory/', getAll);
 
-function editMode(id: string) {
+function editMode(id: number) {
   newProduct.value = {
     ...((data.value as ProductModel[]).find((el) => el.id === id) as ProductModel),
   };
@@ -47,15 +69,14 @@ async function createProduct() {
   try {
     await createEntity(newProduct.value);
 
-    productModal.value = false;
     useNotify('positive', 'Product  created successfully !');
 
     mutate();
   } catch (error) {
     console.log(error);
-
     useNotify('negative', error.response.statusText);
   } finally {
+    productModal.value = false;
     loading.hide();
   }
 }
@@ -65,24 +86,31 @@ async function updateProduct() {
 
   if (!res) return useNotify('negative', 'Please fill the required fields !');
 
+  const product = data.value?.filter((el) => el.id === newProduct.value.id)[0];
+
+  if (!product) return;
+  if (!Object.keys(getDiff(product, newProduct.value)).length) return;
+
   loading.show();
   try {
-    await updateEntity(newProduct.value, newProduct.value?.id);
+    await updateEntity(getDiff(product, newProduct.value), newProduct.value?.id);
 
     useNotify('positive', 'Product  updated successfully !');
-    productModal.value = false;
-    isEditMode.value = false;
 
     mutate();
   } catch (error) {
     console.log(error);
     useNotify('negative', error.response.statusText);
   } finally {
+    productModal.value = false;
+    isEditMode.value = false;
+    resetProduct();
+
     loading.hide();
   }
 }
 
-async function removeProduct(id: string) {
+async function removeProduct(id: number) {
   loading.show();
 
   try {
@@ -93,29 +121,26 @@ async function removeProduct(id: string) {
     mutate();
   } catch (error) {
     console.log(error);
-
     useNotify('negative', error.response.statusText);
   } finally {
     isEditMode.value = false;
-    newProduct.value = {};
     productModal.value = false;
+    resetProduct();
 
     loading.hide();
   }
 }
 
 async function handleSubmit() {
-  if (isEditMode.value) {
-    await updateProduct();
-    return;
-  }
+  if (isEditMode.value) return await updateProduct();
+
   await createProduct();
 }
 </script>
 
 <template>
   <q-page class="q-py-sm q-px-md">
-    <q-dialog v-model="productModal" @hide="(newProduct = { quantity: 0 }), (isEditMode = false)">
+    <q-dialog v-model="productModal" @hide="resetProduct(), (isEditMode = false)">
       <q-card style="width: 700px; max-width: 700px" class="bg q-pb-sm">
         <q-card-section>
           <span class="text-h5" v-if="!isEditMode">Add a new Product</span>
@@ -163,7 +188,7 @@ async function handleSubmit() {
             <div class="row q-col-gutter-md items-start">
               <div class="col col-sm-6 col-xs-12">
                 <app-input
-                  v-model="newProduct.rate"
+                  v-model.number="newProduct.rate"
                   name="Product rate"
                   required
                   type="number"
@@ -172,7 +197,7 @@ async function handleSubmit() {
               </div>
               <div class="col col-sm-6 col-xs-12">
                 <app-input
-                  v-model="newProduct.quantity"
+                  v-model.number="newProduct.quantity"
                   name="Product quantity"
                   required
                   type="number"
@@ -204,7 +229,7 @@ async function handleSubmit() {
           </q-card-section>
 
           <q-card-actions align="right" class="q-gutter-x-md q-px-md">
-            <app-delete-button v-if="isEditMode" @remove="removeProduct(newProduct.id)" />
+            <app-delete-button v-if="isEditMode" @remove="removeProduct(newProduct.id as number)" />
             <q-btn
               :label="isEditMode ? 'Update' : 'Submit'"
               no-caps

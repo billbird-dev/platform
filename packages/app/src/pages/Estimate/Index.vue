@@ -2,43 +2,35 @@
 import { date, QForm, useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 import { ref, watchEffect } from 'vue';
-
 import CustomerBlock from 'components/Bill/CustomerBlock.vue';
 import InvoiceRow from 'components/Bill/InvoiceRow.vue';
-import {
-  CustomerBlock as CustomerModel,
-  EstimateModel,
-  InvoiceItem,
-  ProductModel,
-} from 'src/types/interfaces';
+import { Customer, EstimateModel, ProductModel } from 'src/types/interfaces';
 import { BillColumns } from 'src/utils/constants';
 import AppInput from 'components/App/AppInput.vue';
-import { useBillBirdApi, useNotify, useSwr } from 'src/utils/helpers';
+import { randomId, useBillBirdApi, useNotify, useSwr } from 'src/utils/helpers';
 
 const router = useRouter();
 const { loading } = useQuasar();
-const { getAll: CustomerGetAll } = useBillBirdApi<CustomerModel>('/sale/customer/');
-const { getAll: InventoryGetAll } = useBillBirdApi<ProductModel>('/inventory/');
-const { createEntity } = useBillBirdApi<EstimateModel>('/sale/estimate/');
+const { getAll: CustomerGetAll } = useBillBirdApi<Customer>('/customer');
+const { getAll: InventoryGetAll } = useBillBirdApi<ProductModel>('/inventory');
+const { createEntity } = useBillBirdApi<EstimateModel>('/estimate');
 
-const { data: Customers } = useSwr<CustomerModel>('/sale/customer', CustomerGetAll);
-const { data: Products } = useSwr<ProductModel>('/inventory/', InventoryGetAll);
+const { data: Customers } = useSwr<Customer>('/customer', CustomerGetAll);
+const { data: Products } = useSwr<ProductModel>('/inventory', InventoryGetAll);
 
 const form = ref<null | QForm>(null);
 const estimateData = ref<EstimateModel>({
-  invoice_number: Math.random().toString(36).substring(7).toUpperCase(),
+  invoice_number: randomId(),
   discount: 0,
   discount_percent: 0,
   net_amount: 0,
   gross_total: 0,
   date: date.formatDate(new Date(), 'YYYY-MM-DD'),
-  customer: '',
   billing_address: '',
   shipping_address: '',
   estimate_item: [
     {
-      serial: 'b3jb',
-      product: '',
+      id: randomId(),
       rate: 0,
       quantity: 1,
       amount: 1,
@@ -47,7 +39,7 @@ const estimateData = ref<EstimateModel>({
 });
 
 const calTotal = () => {
-  estimateData.value.net_amount = (estimateData.value.estimate_item as InvoiceItem[]).reduce(
+  estimateData.value.net_amount = estimateData.value.estimate_item.reduce(
     (acc, val) => acc + (val as any).amount,
     0,
   );
@@ -69,16 +61,15 @@ const calTotal = () => {
 };
 
 const removeRow = (index: string): void => {
-  estimateData.value.estimate_item?.splice(
-    estimateData.value.estimate_item?.findIndex((el) => el.serial === index),
+  estimateData.value.estimate_item.splice(
+    estimateData.value.estimate_item.findIndex((el) => el.id === index),
     1,
   );
 };
 
 const addRow = (): void => {
-  estimateData.value.estimate_item?.push({
-    serial: Math.random().toString(36).substring(7),
-    product: '',
+  estimateData.value.estimate_item.push({
+    id: randomId(),
     rate: 0,
     quantity: 1,
     amount: 1,
@@ -90,13 +81,12 @@ async function createEstimate() {
     const res = await form.value?.validate(true);
     if (!res) return useNotify('negative', 'Please fill the required fields !');
 
-    if (!estimateData.value.customer?.length)
-      return useNotify('negative', 'Please fill customer Data !');
+    if (!estimateData.value.customer) return useNotify('negative', 'Please fill customer Data !');
 
     if (!estimateData.value.date?.length)
       return useNotify('negative', 'Please fill estimate Date !');
 
-    if (estimateData.value.estimate_item?.some((el) => !el.product?.length))
+    if (estimateData.value.estimate_item.some((el) => !el.product))
       return useNotify('negative', 'Please select a product !');
 
     loading.show();
@@ -112,16 +102,33 @@ async function createEstimate() {
   }
 }
 
-watchEffect(() => {
-  calTotal();
-});
+watchEffect(calTotal);
 
 watchEffect(() => {
-  if ((estimateData.value.estimate_item as InvoiceItem[]).length < 1) {
+  if (estimateData.value.estimate_item.length < 1) {
     useNotify('negative', "Items can't be empty !");
     addRow();
   }
 });
+
+interface CustomerPayload {
+  customer?: number;
+  billing_address?: string;
+  shipping_address?: string;
+}
+
+function selectCustomer(payload: CustomerPayload) {
+  estimateData.value = {
+    ...estimateData.value,
+    customer: payload.customer,
+    shipping_address: payload.shipping_address,
+    billing_address: payload.billing_address,
+  };
+}
+
+function setDate(date: string) {
+  estimateData.value.date = date;
+}
 </script>
 
 <template>
@@ -129,7 +136,13 @@ watchEffect(() => {
     <p class="text-h4 q-pt-md q-pb-lg page-header">
       <b>New Estimate</b>
     </p>
-    <customer-block :invoice-data="estimateData" :date="estimateData.date" :Customers="Customers" />
+    <customer-block
+      :invoice-data="estimateData"
+      :date="estimateData.date"
+      :customers="Customers || []"
+      @selected:customer="selectCustomer"
+      @selected:date="setDate"
+    />
     <q-form ref="form" greedy>
       <div class="b-table">
         <table class="b-table__native">
@@ -144,12 +157,12 @@ watchEffect(() => {
           <tbody>
             <invoice-row
               v-for="(row, index) in estimateData.estimate_item"
-              :key="row.serial"
+              :key="row.id"
               :index="index"
-              :rowData="row"
+              :row-data="row"
               @remove-row="removeRow($event)"
               @add-row="addRow"
-              :productList="Products"
+              :product-list="Products"
             />
           </tbody>
         </table>

@@ -1,49 +1,64 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import AppInput from 'components/App/AppInput.vue';
-import { useRoute } from 'vue-router';
-import { CustomerBlock, EstimateModel, InvoiceModel, PurchaseModel } from 'src/types/interfaces';
 
-const props = defineProps<{
-  invoiceData: InvoiceModel & PurchaseModel & EstimateModel;
-  Customers?: CustomerBlock[];
-}>();
+interface CustomerPayload {
+  customer?: number;
+  billing_address?: string;
+  shipping_address?: string;
+}
 
-const route = useRoute();
-const invoiceProp = ref(props.invoiceData);
-const customerList = ref(props.Customers);
+const props = withDefaults(
+  defineProps<{
+    date: string;
+    customers: any[];
+  }>(),
+  {
+    customers: () => [],
+  },
+);
+
+const customerList = ref(props.customers);
 const customer = ref<Record<string, any>>({});
 const qDateProxy = ref<any>();
 
-function setCustomer(e: string) {
-  const watchData = customerList.value?.find((el: Record<string, any>) => el.id === e);
+function setCustomer(e: number) {
+  const watchData = customerList.value.find((el) => el.id === e);
 
-  if (watchData) {
-    if (!['/purchase'].includes(route.path)) {
-      //TODO: generalize the customer pickup
-      invoiceProp.value.customer = watchData.id;
-      invoiceProp.value.customer_id = watchData.id as string;
-      invoiceProp.value.billing_address = watchData.billing_address as string;
-      invoiceProp.value.shipping_address = watchData.shipping_address as string;
-    } else {
-      invoiceProp.value.supplier = watchData.id as string;
-    }
-    customer.value = { ...watchData };
-  } else {
-    customer.value.name = e;
-  }
+  if (!watchData) return (customer.value.name = e);
+
+  emits('selected:customer', {
+    customer: watchData.id,
+    billing_address: watchData.billing_address || '',
+    shipping_address: watchData.shipping_address || '',
+  });
+
+  customer.value = { ...watchData };
 }
 
 function filterFn(val: string, update: any) {
   update(() => {
     const needle = val.toLowerCase();
-    customerList.value = props.Customers?.slice().filter(
-      (v: any) =>
-        (v.name as string).toLowerCase().indexOf(needle) > -1 ||
-        (v.phone as number).toString().indexOf(needle) > -1,
-    );
+
+    customerList.value = props.customers
+      ?.slice()
+      .filter(
+        (v: any) =>
+          (v.name as string).toLowerCase().indexOf(needle) > -1 ||
+          (v.phone as number).toString().indexOf(needle) > -1,
+      );
   });
 }
+
+const emits = defineEmits<{
+  (e: 'selected:customer', payload: CustomerPayload): void;
+  (e: 'selected:date', date: string): void;
+}>();
+
+const setectedDate = (date: any) => {
+  emits('selected:date', date);
+  qDateProxy.value.hide();
+};
 </script>
 
 <template>
@@ -74,7 +89,7 @@ function filterFn(val: string, update: any) {
           use-input
           :input-debounce="100"
           hint="Search by name, mobile number etc.."
-          @update:modelValue="setCustomer"
+          @update:model-value="setCustomer"
         >
           <template v-slot:no-option>
             <q-item>
@@ -125,7 +140,7 @@ function filterFn(val: string, update: any) {
       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 q-gutter-y-xs">
         <span class="q-mb-sm">Date of invoice</span>
         <q-input
-          v-model="invoiceProp.date"
+          :model-value="date"
           standout
           lazy-rules
           dense
@@ -139,11 +154,11 @@ function filterFn(val: string, update: any) {
             <q-icon name="las la-calendar" color="dark" class="cursor-pointer">
               <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
                 <q-date
-                  v-model="invoiceProp.date"
+                  :model-value="date"
+                  @update:model-value="setectedDate"
                   today-btn
                   color="primary"
                   text-color="black"
-                  @update:modelValue="qDateProxy.hide()"
                   mask="YYYY-MM-DD"
                 >
                   <div class="row items-center justify-end">

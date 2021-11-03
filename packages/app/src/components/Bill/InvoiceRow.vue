@@ -1,47 +1,47 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-
 import { InvoiceItem, ProductModel } from 'src/types/interfaces';
 import AppInput from 'components/App/AppInput.vue';
 
 defineEmits(['remove-row', 'add-row']);
 
-const props = defineProps<{
-  rowData: any;
-  index: number;
-  productList?: ProductModel[];
-}>();
+const props = withDefaults(
+  defineProps<{
+    rowData: any;
+    index: number;
+    productList: ProductModel[];
+  }>(),
+  { productList: () => [] },
+);
 
 const row = ref<InvoiceItem>(props.rowData);
 const products = ref(props.productList);
 
-function setProduct(e: string) {
+function setProduct(e: number) {
   const watchData = products.value?.find((el) => el.id === e);
-  if (watchData) {
-    row.value.product = watchData.id;
-    row.value.name = watchData.name;
-    row.value.rate = watchData.rate;
-  } else {
-    row.value.name = e;
-  }
+  if (!watchData) return;
+
+  row.value.product = { ...watchData };
+  row.value.rate = watchData.rate;
 }
 
 const calAmount = () => {
-  if (row.value.rate === 0) {
+  if (!row.value.product || row.value.product.rate === 0) {
     row.value.amount = 0;
   } else {
-    const val = (row.value.rate as number) * (row.value.quantity as number);
+    const val = row.value.rate * row.value.quantity;
     row.value.amount = val;
   }
 };
 
-watchEffect(() => calAmount());
+watchEffect(calAmount);
 
 function filterFn(val: string, update: any) {
   update(() => {
     const needle = val.toLowerCase();
+
     products.value = props.productList
-      ?.slice()
+      .slice()
       .filter((v) => (v.name as string).toLowerCase().indexOf(needle) > -1);
   });
 }
@@ -57,7 +57,7 @@ function filterFn(val: string, update: any) {
         color="black"
         standout
         dense
-        :model-value="row.name"
+        :model-value="row.product?.name"
         use-input
         :input-debounce="100"
         label="Select Product"
@@ -69,7 +69,7 @@ function filterFn(val: string, update: any) {
         :option-label="(item) => (item && item.id ? `${item.name}` : item)"
         option-value="id"
         emit-value
-        @update:modelValue="setProduct"
+        @update:model-value="setProduct"
       ></q-select>
     </td>
     <td class="b-table__td">
@@ -82,7 +82,7 @@ function filterFn(val: string, update: any) {
         type="number"
         :min="0"
         :no-error-icon="$q.screen.width > 450"
-        :disable="!row.name"
+        :disable="!row.product?.name"
       />
     </td>
     <td class="b-table__td">
@@ -96,7 +96,7 @@ function filterFn(val: string, update: any) {
         :no-error-icon="$q.screen.width > 450"
         @tab="$emit('add-row')"
         :min="1"
-        :disable="!row.name"
+        :disable="!row.product?.name"
       />
     </td>
     <td class="b-table__td">
@@ -112,14 +112,7 @@ function filterFn(val: string, update: any) {
       />
     </td>
     <td class="del" title="Delete Row">
-      <q-btn
-        round
-        unelevated
-        flat
-        size="md"
-        color="negative"
-        @click="$emit('remove-row', row.serial)"
-      >
+      <q-btn round unelevated flat size="md" color="negative" @click="$emit('remove-row', row.id)">
         <q-icon name="las la-trash-alt" color="negative" size="sm"></q-icon>
       </q-btn>
     </td>

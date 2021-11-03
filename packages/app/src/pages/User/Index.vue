@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { User } from 'src/store/user';
+import { Company } from 'src/store/user';
 import InfoBlock from 'components/User/InfoBlock.vue';
 import { computed } from 'vue';
 import { useStore } from 'vuex';
@@ -8,7 +8,7 @@ import { MainNav } from 'src/utils/constants';
 
 const store = useStore();
 
-const user = computed((): User => store.getters['users/getUser']);
+const user = computed((): Company => store.getters['users/getUser']);
 const apps = Object.values(MainNav).map((val) => val[0]);
 </script>
 

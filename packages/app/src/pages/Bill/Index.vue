@@ -2,31 +2,25 @@
 import CustomerBlock from 'components/Bill/CustomerBlock.vue';
 import InvoiceRow from 'components/Bill/InvoiceRow.vue';
 import { ref, watchEffect } from 'vue';
-import {
-  CustomerBlock as CustomerModel,
-  InvoiceItem,
-  InvoiceModel,
-  ProductModel,
-} from 'src/types/interfaces';
+import { Customer, InvoiceModel, ProductModel } from 'src/types/interfaces';
 import { BillColumns } from 'src/utils/constants';
-
 import AppInput from 'components/App/AppInput.vue';
-import { useBillBirdApi, useNotify, useSwr } from 'src/utils/helpers';
+import { randomId, useBillBirdApi, useNotify, useSwr } from 'src/utils/helpers';
 import { date, QForm, useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 
 const { loading } = useQuasar();
 const router = useRouter();
-const { getAll: CustomergetAll } = useBillBirdApi<CustomerModel>('/sale/customer/');
-const { getAll: InventorygetAll } = useBillBirdApi<ProductModel>('/inventory/');
-const { createEntity } = useBillBirdApi<ProductModel>('/sale/bill/');
 
-const { data: Customers } = useSwr<CustomerModel>('/sale/customer', CustomergetAll);
-const { data: Products } = useSwr<ProductModel>('/inventory/', InventorygetAll);
+const { getAll: CustomergetAll } = useBillBirdApi<Customer>('/customer');
+const { getAll: InventorygetAll } = useBillBirdApi<ProductModel>('/inventory');
+const { createEntity } = useBillBirdApi<InvoiceModel>('/sale');
 
-const form = ref<null | QForm>(null);
+const { data: Customers } = useSwr<Customer>('/customer', CustomergetAll);
+const { data: Products } = useSwr<ProductModel>('/inventory', InventorygetAll);
+
+const form = ref<QForm | null>(null);
 const invoiceData = ref<InvoiceModel>({
-  invoice_number: Math.random().toString(36).substring(7).toUpperCase(),
   igst_percent: 0,
   cgst_value: 0,
   sgst_value: 0,
@@ -39,29 +33,29 @@ const invoiceData = ref<InvoiceModel>({
   taxable_amount: 0,
   gross_total: 0,
   date: date.formatDate(new Date(), 'YYYY-MM-DD'),
-  customer_id: '',
   billing_address: '',
   shipping_address: '',
-  sale_item: [
+  items: [
     {
-      serial: 'b3jb',
-      product: '',
-      rate: 0,
+      id: randomId(),
       quantity: 1,
       amount: 1,
+      rate: 0,
     },
   ],
 });
 
 const calTotal = () => {
-  invoiceData.value.net_amount = (invoiceData.value.sale_item as InvoiceItem[]).reduce(
+  invoiceData.value.net_amount = invoiceData.value.items.reduce(
     (acc, val) => acc + (val as any).amount,
     0,
   );
+
   if (invoiceData.value.igst_percent !== 0) {
     invoiceData.value.sgst_percent = 0;
     invoiceData.value.cgst_percent = 0;
   }
+
   if (invoiceData.value.discount_percent !== 0) {
     invoiceData.value.discount =
       ((invoiceData.value.discount_percent as number) / 100) * invoiceData.value.net_amount;
@@ -69,6 +63,7 @@ const calTotal = () => {
       (Math.floor(invoiceData.value.discount * 100) / 100).toFixed(2),
     );
   }
+
   invoiceData.value.taxable_amount =
     invoiceData.value.net_amount -
     parseFloat((Math.floor((invoiceData.value.discount as number) * 100) / 100).toFixed(2));
@@ -81,12 +76,15 @@ const calTotal = () => {
   invoiceData.value.igst_value = parseFloat(
     (Math.floor(invoiceData.value.igst_value * 100) / 100).toFixed(2),
   );
+
   invoiceData.value.cgst_value = parseFloat(
     (Math.floor(invoiceData.value.cgst_value * 100) / 100).toFixed(2),
   );
+
   invoiceData.value.sgst_value = parseFloat(
     (Math.floor(invoiceData.value.sgst_value * 100) / 100).toFixed(2),
   );
+
   invoiceData.value.gross_total =
     invoiceData.value.taxable_amount +
     invoiceData.value.cgst_value +
@@ -97,19 +95,18 @@ const calTotal = () => {
 };
 
 const removeRow = (index: string): void => {
-  invoiceData.value.sale_item?.splice(
-    invoiceData.value.sale_item?.findIndex((el) => el.serial === index),
+  invoiceData.value.items.splice(
+    invoiceData.value.items.findIndex((el) => el.id === index),
     1,
   );
 };
 
 const addRow = (): void => {
-  invoiceData.value.sale_item?.push({
-    serial: Math.random().toString(36).substring(7),
-    product: '',
-    rate: 0,
+  invoiceData.value.items.push({
+    id: randomId(),
     quantity: 1,
     amount: 1,
+    rate: 0,
   });
 };
 
@@ -118,12 +115,11 @@ async function createSaleInvoice() {
     const res = await form.value?.validate(true);
     if (!res) return useNotify('negative', 'Please fill the required fields !');
 
-    if (!invoiceData.value.customer_id?.length)
-      return useNotify('negative', 'Please fill customer Data !');
+    if (!invoiceData.value.customer) return useNotify('negative', 'Please fill customer Data !');
 
     if (!invoiceData.value.date?.length) return useNotify('negative', 'Please fill invoice Date !');
 
-    if (invoiceData.value.sale_item?.some((el) => !el.product?.length))
+    if (invoiceData.value.items.some((el) => !el.product))
       return useNotify('negative', 'Please select a product !');
 
     loading.show();
@@ -131,23 +127,39 @@ async function createSaleInvoice() {
 
     router.push(`/invoice/bill/${id}`);
   } catch (error) {
-    console.log(JSON.parse(JSON.stringify(error as any)));
     useNotify('negative', 'Some error occured !');
   } finally {
     loading.hide();
   }
 }
 
-watchEffect(() => {
-  calTotal();
-});
+watchEffect(calTotal);
 
 watchEffect(() => {
-  if ((invoiceData.value.sale_item as InvoiceItem[]).length < 1) {
+  if (invoiceData.value.items.length < 1) {
     useNotify('negative', "Items can't be empty !");
     addRow();
   }
 });
+
+interface CustomerPayload {
+  customer?: number;
+  billing_address?: string;
+  shipping_address?: string;
+}
+
+function selectCustomer(payload: CustomerPayload) {
+  invoiceData.value = {
+    ...invoiceData.value,
+    customer: payload.customer,
+    shipping_address: payload.shipping_address,
+    billing_address: payload.billing_address,
+  };
+}
+
+function setDate(date: string) {
+  invoiceData.value.date = date;
+}
 </script>
 
 <template>
@@ -155,7 +167,12 @@ watchEffect(() => {
     <p class="text-h4 q-pt-md q-pb-lg page-header">
       <b>New Tax Invoice</b>
     </p>
-    <customer-block :invoiceData="invoiceData" :date="invoiceData.date" :Customers="Customers" />
+    <customer-block
+      :date="invoiceData.date"
+      :customers="Customers || []"
+      @selected:customer="selectCustomer"
+      @selected:date="setDate"
+    />
     <q-form ref="form" greedy>
       <div class="b-table">
         <table class="b-table__native">
@@ -167,15 +184,16 @@ watchEffect(() => {
               <th class="b-table__th"></th>
             </tr>
           </thead>
+
           <tbody>
             <invoice-row
-              v-for="(row, index) in invoiceData.sale_item"
-              :key="row.serial"
+              v-for="(row, index) in invoiceData.items"
+              :key="row.id"
               :index="index"
-              :rowData="row"
+              :row-data="row"
               @remove-row="removeRow($event)"
               @add-row="addRow"
-              :productList="Products"
+              :product-list="Products"
             />
           </tbody>
         </table>
@@ -183,7 +201,7 @@ watchEffect(() => {
 
       <div class="q-my-md">
         <q-btn round unelevated size="md" color="primary" @click="addRow">
-          <q-icon name="las la-plus-circle" color="black" size="sm"></q-icon>
+          <q-icon name="las la-plus-circle" color="black" size="sm" />
         </q-btn>
       </div>
 

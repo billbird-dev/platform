@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
 import { CustomerTableColumns } from 'src/utils/constants';
-import { CustomerBlock } from 'src/types/interfaces';
+import { Customer } from 'src/types/interfaces';
 import { useBillBirdApi, useNotify, useSwr } from 'src/utils/helpers';
 import { useQuasar } from 'quasar';
 import customerDialog from 'src/components/Customer/CustomerModal.vue';
@@ -14,19 +14,36 @@ const initialPagination = {
 };
 
 const { loading } = useQuasar();
-const { createEntity, getAll, updateEntity, removeEntity } =
-  useBillBirdApi<CustomerBlock>('/sale/customer/');
-const { data, mutate, isValidating } = useSwr<CustomerBlock>('/sale/customer/', getAll);
+const { createEntity, getAll, updateEntity, removeEntity } = useBillBirdApi<Customer>('/customer');
+const { data, mutate, isValidating } = useSwr<Customer>('/customer', getAll);
 
 const customerModal = ref(false);
-const newCustomer = ref<CustomerBlock>({ registered_gst_member: false });
+const newCustomer = ref<Customer>({
+  billing_address: '',
+  email: '',
+  gstin: '',
+  name: '',
+  shipping_address: '',
+  registered_gst_member: false,
+});
+
+const resetCustomer = () =>
+  (newCustomer.value = {
+    billing_address: '',
+    email: '',
+    gstin: '',
+    name: '',
+    shipping_address: '',
+    registered_gst_member: false,
+  });
+
 const isEditMode = ref(false);
 const filter = ref('');
 
-function editMode(id: string) {
+function editMode(id: number) {
   newCustomer.value = {
-    ...(data.value as CustomerBlock[]).find((el) => el.id === id),
-  } as CustomerBlock;
+    ...(data.value as Customer[]).find((el) => el.id === id),
+  } as Customer;
 
   isEditMode.value = true;
   customerModal.value = true;
@@ -68,14 +85,14 @@ async function updateCustomer() {
     await mutate();
   } catch (error) {
     console.log(error as any);
-
+    resetCustomer();
     useNotify('negative', (error as any).response.statusText);
   } finally {
     loading.hide();
   }
 }
 
-async function removeCustomer(id: string) {
+async function removeCustomer(id: number) {
   loading.show();
 
   try {
@@ -90,8 +107,8 @@ async function removeCustomer(id: string) {
   } finally {
     loading.hide();
 
+    resetCustomer();
     isEditMode.value = false;
-    newCustomer.value = { registered_gst_member: false };
     customerModal.value = false;
   }
 }
@@ -118,7 +135,7 @@ watchEffect(() => {
       v-model:customer-phone="newCustomer.phone"
       @removeCustomer="removeCustomer($event)"
       @createCustomer="createCustomer"
-      @reset="(newCustomer = { registered_gst_member: false }), (isEditMode = false)"
+      @reset="resetCustomer(), (isEditMode = false)"
       @updateCustomer="updateCustomer"
     />
 

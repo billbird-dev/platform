@@ -65,7 +65,7 @@ export class AuthController {
     }
   }
 
-  @UseGuards(JwtAuthenticationGuard, JwtRefreshGuard)
+  @UseGuards(JwtRefreshGuard)
   @Get('refresh')
   async refresh(@Req() request: RequestWithCompany, @Res() res: Response) {
     try {

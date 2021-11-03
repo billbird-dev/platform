@@ -1,4 +1,4 @@
-import { Notify } from 'quasar';
+import { Notify, date } from 'quasar';
 import { useStore } from 'vuex';
 import { useRouter, useRoute } from 'vue-router';
 import useSWRV, { IConfig } from 'swrv';
@@ -154,10 +154,10 @@ export function useBillBirdApi<T>(path: string) {
      * @param {string} id - ID of the entity
      * @param {T} data entity data to be updated
      */
-    async updateEntity(data: T, id: string | undefined): Promise<T> {
+    async updateEntity(data: Partial<T>, id: number | undefined): Promise<T> {
       return new Promise((resolve, reject) => {
         api
-          .put(`${path}${id}/`, { ...data })
+          .patch(`${path}/${id}`, { ...data })
           .then((res: AxiosResponse<T>) => resolve(res.data))
           .catch((err: AxiosError) => reject(err));
       });
@@ -167,10 +167,10 @@ export function useBillBirdApi<T>(path: string) {
      * @description remove an entity by ID
      * @param {string} id id of the entity
      */
-    async removeEntity(id: string): Promise<any> {
+    async removeEntity(id: number): Promise<any> {
       return new Promise((resolve, reject) => {
         api
-          .delete(`${path}${id}/`)
+          .delete(`${path}/${id}`)
           .then((res) => resolve(res.data))
           .catch((err: AxiosError) => reject(err));
       });
@@ -178,14 +178,34 @@ export function useBillBirdApi<T>(path: string) {
   };
 }
 
-export function getDiff<T extends Record<string, any>, K>(
-  toMatch: T,
-  newData: { [x in keyof T]?: T[x] },
-): Partial<T> {
+/**
+ * get Diff upto one level
+ * @param toMatch
+ * @param newData
+ * @returns diff data
+ */
+export function getDiff<T extends Record<string, any>>(toMatch: T, newData: Partial<T>) {
   return Object.entries(newData).reduce<Partial<T>>((acc, [key, value]) => {
-    if (!(value !== toMatch[key] && value.length > 0)) return acc;
+    if (typeof value === 'boolean' && value === toMatch[key]) return acc;
+
+    if (typeof value !== 'boolean' && !(value !== toMatch[key] && value.length > 0)) return acc;
+
     acc = { ...acc, [key]: value };
 
     return acc;
   }, {});
 }
+
+export function randomId(len?: number) {
+  function dec2hex(dec: any) {
+    return dec.toString(16).padStart(2, '0');
+  }
+
+  const arr = new Uint8Array((len || 30) / 2);
+  window.crypto.getRandomValues(arr);
+
+  return Array.from(arr, dec2hex).join('');
+}
+
+export const formatDate = (data: string, format?: string) =>
+  date.formatDate(data, format || 'YYYY-MM-DD');

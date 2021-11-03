@@ -26,31 +26,31 @@ export class CreateSaleDto {
   shipping_address?: string;
 
   @IsNumber()
-  gross_total: number;
+  gross_total?: number;
 
   @IsNumber()
-  discount: number;
+  discount?: number;
 
   @IsNumber()
-  taxable_amount: number;
+  taxable_amount?: number;
 
   @IsNumber()
-  cgst_percent: number;
+  cgst_percent?: number;
 
   @IsNumber()
-  sgst_percent: number;
+  sgst_percent?: number;
 
   @IsNumber()
-  igst_percent: number;
+  igst_percent?: number;
 
   @IsNumber()
-  cgst_value: number;
+  cgst_value?: number;
 
   @IsNumber()
-  sgst_value: number;
+  sgst_value?: number;
 
   @IsNumber()
-  igst_value: number;
+  igst_value?: number;
 
   @IsNumber()
   net_amount: number;
