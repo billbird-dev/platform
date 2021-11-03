@@ -12,7 +12,7 @@ import { Company } from 'src/store/user';
 
 const store = useStore();
 const { loading } = useQuasar();
-const { push } = useMainRouter();
+const router = useMainRouter();
 
 const isLoggedIn = computed((): boolean => store.getters['users/isLoggedIn']);
 const leftDrawerOpen = ref(false);
@@ -43,7 +43,7 @@ async function authUser() {
     if (interval.value) clearInterval(interval.value);
 
     await store.dispatch('users/LOGOUT');
-    push('/');
+    router.push('/');
 
     isInit.value = true;
   } finally {
@@ -63,7 +63,7 @@ function tokenWatcher() {
       await getTokens();
     } catch (error) {
       await store.dispatch('users/LOGOUT');
-      await push('/');
+      await router.push('/');
 
       location.reload();
     }

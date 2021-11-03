@@ -3,12 +3,12 @@ import { computed } from 'vue';
 import { MainNav } from 'src/utils/constants';
 import { useMainRoute } from 'src/utils/helpers';
 
-const { path } = useMainRoute();
+const route = useMainRoute();
 
 const navItems = computed(() => {
-  if (path === '/') return [];
+  if (route.path === '/') return [];
 
-  return MainNav[path.split('/')[1]];
+  return MainNav[route.path.split('/')[1]];
 });
 </script>
 
