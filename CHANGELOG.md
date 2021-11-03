@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Commits
 
+- fix(api): make customer, supplier phones text [`0a1b8de`](https://github.com-soulsam480/BillBirdLLP/platform/commit/0a1b8de8e34adae4f342900570879185029306f2)
+- refactor(app): migrate sale, customer, inventory to new APIs [`a056a6c`](https://github.com-soulsam480/BillBirdLLP/platform/commit/a056a6cd9cc1de053b3b4d8996dd5a25793350f9)
+- refactor(app): migrate preferences to new API, added profile update [`9425870`](https://github.com-soulsam480/BillBirdLLP/platform/commit/942587078e8b6e7481de43ac3e6d0cf84070c749)
+- refactor: migrate app auth to new API [`cbcd7b3`](https://github.com-soulsam480/BillBirdLLP/platform/commit/cbcd7b3fcce4b48d8a77656912a36df466e15fa0)
+- fix(app): add vuex [`190d8ae`](https://github.com-soulsam480/BillBirdLLP/platform/commit/190d8ae532189bf1e692461ac96c33b31a32cbee)
+- fix: lint [`48360fb`](https://github.com-soulsam480/BillBirdLLP/platform/commit/48360fb6890f2f4d3b4108a1520044b73ca755dd)
+- feat(api): added company update API [`7f16c0b`](https://github.com-soulsam480/BillBirdLLP/platform/commit/7f16c0bf647a91617e71a5677c296791189c1d5e)
+- chore: update changelog [`dd0d15f`](https://github.com-soulsam480/BillBirdLLP/platform/commit/dd0d15fa5e569d7913b9619e64741d7d95496d5c)
 - feat(api): transactions entity and APIs [`4509770`](https://github.com-soulsam480/BillBirdLLP/platform/commit/45097709b2cff7076bd19bed73effe8929e87b8c)
 - feat(api): sale. purchase preferences entity and APIs [`a37f22b`](https://github.com-soulsam480/BillBirdLLP/platform/commit/a37f22b6e006e06b48b89fd55fdb4e44f91f2d96)
 - chore(app): upgrade deps [`f6e2523`](https://github.com-soulsam480/BillBirdLLP/platform/commit/f6e2523df09ba37012de9438023a506a3d2f9c74)
