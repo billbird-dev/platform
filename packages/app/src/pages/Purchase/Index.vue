@@ -21,7 +21,6 @@ const { data: Products } = useSwr<ProductModel>('/inventory', inventoryGetAll);
 
 const form = ref<null | QForm>(null);
 const invoiceData = ref<PurchaseModel>({
-  invoice_number: randomId(),
   igst_percent: 0,
   cgst_value: 0,
   sgst_value: 0,
@@ -34,7 +33,7 @@ const invoiceData = ref<PurchaseModel>({
   taxable_amount: 0,
   gross_total: 0,
   date: date.formatDate(new Date(), 'YYYY-MM-DD'),
-  purchase_item: [
+  items: [
     {
       id: randomId(),
       rate: 0,
@@ -44,8 +43,8 @@ const invoiceData = ref<PurchaseModel>({
   ],
 });
 
-const calTotal = () => {
-  invoiceData.value.net_amount = invoiceData.value.purchase_item.reduce(
+function calTotal() {
+  invoiceData.value.net_amount = invoiceData.value.items.reduce(
     (acc, item) => acc + (item as any).amount,
     0,
   );
@@ -92,17 +91,17 @@ const calTotal = () => {
     invoiceData.value.igst_value;
   invoiceData.value.gross_total = Math.floor(invoiceData.value.gross_total * 100) / 100;
   invoiceData.value.gross_total.toFixed(2);
-};
+}
 
 const removeRow = (index: string): void => {
-  invoiceData.value.purchase_item.splice(
-    invoiceData.value.purchase_item.findIndex((el) => el.id === index),
+  invoiceData.value.items.splice(
+    invoiceData.value.items.findIndex((el) => el.id === index),
     1,
   );
 };
 
 const addRow = (): void => {
-  invoiceData.value.purchase_item.push({
+  invoiceData.value.items.push({
     id: randomId(),
     rate: 0,
     quantity: 1,
@@ -120,7 +119,7 @@ async function createPurchaseInvoice() {
 
     if (!invoiceData.value.date?.length) return useNotify('negative', 'Please fill invoice Date !');
 
-    if (invoiceData.value.purchase_item.some((el) => !el.product))
+    if (invoiceData.value.items.some((el) => !el.product))
       return useNotify('negative', 'Please select a product !');
 
     loading.show();
@@ -138,18 +137,19 @@ async function createPurchaseInvoice() {
 watchEffect(calTotal);
 
 watchEffect(() => {
-  if (invoiceData.value.purchase_item.length < 1) {
+  if (invoiceData.value.items.length < 1) {
     useNotify('negative', "Items can't be empty !");
     addRow();
   }
 });
+
 interface CustomerPayload {
   customer?: number;
   billing_address?: string;
   shipping_address?: string;
 }
 
-function selectCustomer(payload: CustomerPayload) {
+function selectSupplier(payload: CustomerPayload) {
   invoiceData.value = {
     ...invoiceData.value,
     supplier: payload.customer,
@@ -170,7 +170,7 @@ function setDate(date: string) {
       :invoiceData="invoiceData"
       :date="invoiceData.date"
       :customers="Suppliers || []"
-      @selected:customer="selectCustomer"
+      @selected:customer="selectSupplier"
       @selected:date="setDate"
     />
     <q-form ref="form" greedy>
@@ -186,7 +186,7 @@ function setDate(date: string) {
           </thead>
           <tbody>
             <invoice-row
-              v-for="(row, index) in invoiceData.purchase_item"
+              v-for="(row, index) in invoiceData.items"
               :key="row.id"
               :index="index"
               :row-data="row"

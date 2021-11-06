@@ -69,6 +69,7 @@ async function createCustomer() {
 
     useNotify('negative', (error as any).response.statusText);
   } finally {
+    resetCustomer();
     loading.hide();
   }
 }
@@ -80,12 +81,12 @@ async function updateCustomer() {
     await updateEntity(newCustomer.value, newCustomer.value?.id);
     customerModal.value = false;
     isEditMode.value = false;
+    resetCustomer();
 
     useNotify('positive', 'Customer  updated successfully !');
     await mutate();
   } catch (error) {
     console.log(error as any);
-    resetCustomer();
     useNotify('negative', (error as any).response.statusText);
   } finally {
     loading.hide();

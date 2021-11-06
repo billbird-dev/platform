@@ -18,7 +18,7 @@ const row = ref<InvoiceItem>(props.rowData);
 const products = ref(props.productList);
 
 function setProduct(e: number) {
-  const watchData = products.value?.find((el) => el.id === e);
+  const watchData = products.value.find((el) => el.id === e);
   if (!watchData) return;
 
   row.value.product = { ...watchData };
@@ -70,8 +70,9 @@ function filterFn(val: string, update: any) {
         option-value="id"
         emit-value
         @update:model-value="setProduct"
-      ></q-select>
+      />
     </td>
+
     <td class="b-table__td">
       <app-input
         class="b-table__td--input"

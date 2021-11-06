@@ -29,7 +29,7 @@ export interface Customer {
   gstin: string;
 }
 export interface SupplierModel {
-  id?: string;
+  id?: number;
   name?: string;
   address?: string;
   email?: string;
@@ -62,7 +62,7 @@ export interface InvoiceModel {
 
 export interface PurchaseModel {
   id?: string;
-  purchase_item: InvoiceItem[];
+  items: InvoiceItem[];
   invoice_number?: string;
   date: string;
   gross_total?: number;

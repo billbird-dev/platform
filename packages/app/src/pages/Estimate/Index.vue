@@ -20,7 +20,6 @@ const { data: Products } = useSwr<ProductModel>('/inventory', InventoryGetAll);
 
 const form = ref<null | QForm>(null);
 const estimateData = ref<EstimateModel>({
-  invoice_number: randomId(),
   discount: 0,
   discount_percent: 0,
   net_amount: 0,
