@@ -28,7 +28,7 @@ const estimateData = ref<EstimateModel>({
   date: date.formatDate(new Date(), 'YYYY-MM-DD'),
   billing_address: '',
   shipping_address: '',
-  estimate_item: [
+  items: [
     {
       id: randomId(),
       rate: 0,
@@ -38,8 +38,8 @@ const estimateData = ref<EstimateModel>({
   ],
 });
 
-const calTotal = () => {
-  estimateData.value.net_amount = estimateData.value.estimate_item.reduce(
+function calTotal() {
+  estimateData.value.net_amount = estimateData.value.items.reduce(
     (acc, val) => acc + (val as any).amount,
     0,
   );
@@ -58,17 +58,17 @@ const calTotal = () => {
     parseFloat((Math.floor((estimateData.value.discount as number) * 100) / 100).toFixed(2));
   Math.floor((estimateData.value.gross_total as number) * 100) / 100;
   (estimateData.value.gross_total as number).toFixed(2);
-};
+}
 
 const removeRow = (index: string): void => {
-  estimateData.value.estimate_item.splice(
-    estimateData.value.estimate_item.findIndex((el) => el.id === index),
+  estimateData.value.items.splice(
+    estimateData.value.items.findIndex((el) => el.id === index),
     1,
   );
 };
 
 const addRow = (): void => {
-  estimateData.value.estimate_item.push({
+  estimateData.value.items.push({
     id: randomId(),
     rate: 0,
     quantity: 1,
@@ -86,7 +86,7 @@ async function createEstimate() {
     if (!estimateData.value.date?.length)
       return useNotify('negative', 'Please fill estimate Date !');
 
-    if (estimateData.value.estimate_item.some((el) => !el.product))
+    if (estimateData.value.items.some((el) => !el.product))
       return useNotify('negative', 'Please select a product !');
 
     loading.show();
@@ -105,7 +105,7 @@ async function createEstimate() {
 watchEffect(calTotal);
 
 watchEffect(() => {
-  if (estimateData.value.estimate_item.length < 1) {
+  if (estimateData.value.items.length < 1) {
     useNotify('negative', "Items can't be empty !");
     addRow();
   }
@@ -117,12 +117,12 @@ interface CustomerPayload {
   shipping_address?: string;
 }
 
-function selectCustomer(payload: CustomerPayload) {
+function selectCustomer(customer: CustomerPayload) {
   estimateData.value = {
     ...estimateData.value,
-    customer: payload.customer,
-    shipping_address: payload.shipping_address,
-    billing_address: payload.billing_address,
+    customer: customer.customer,
+    shipping_address: customer.shipping_address,
+    billing_address: customer.billing_address,
   };
 }
 
@@ -156,7 +156,7 @@ function setDate(date: string) {
           </thead>
           <tbody>
             <invoice-row
-              v-for="(row, index) in estimateData.estimate_item"
+              v-for="(row, index) in estimateData.items"
               :key="row.id"
               :index="index"
               :row-data="row"

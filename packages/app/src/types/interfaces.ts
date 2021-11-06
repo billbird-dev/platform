@@ -47,6 +47,8 @@ export interface InvoiceModel {
   shipping_address?: string;
   gross_total?: number;
   discount?: number;
+  net_amount?: number;
+  customer?: number;
   discount_percent?: number;
   taxable_amount?: number;
   cgst_percent?: number;
@@ -55,9 +57,7 @@ export interface InvoiceModel {
   cgst_value?: number;
   sgst_value?: number;
   igst_value?: number;
-  net_amount?: number;
   company?: string;
-  customer?: number;
 }
 
 export interface PurchaseModel {
@@ -82,7 +82,7 @@ export interface PurchaseModel {
 
 export interface EstimateModel {
   id?: string;
-  estimate_item: InvoiceItem[];
+  items: InvoiceItem[];
   invoice_number?: string;
   date: string;
   billing_address?: string;
@@ -95,15 +95,6 @@ export interface EstimateModel {
 }
 
 export interface ProductModel {
-  // id?: string;
-  // code?: string;
-  // name?: string;
-  // brand?: string;
-  // description?: string;
-  // hsn_code?: string;
-  // quantity?: number;
-  // unit?: string;
-  // rate?: number;
   id?: number;
   code: string;
   name: string;

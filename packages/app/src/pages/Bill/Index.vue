@@ -45,7 +45,7 @@ const invoiceData = ref<InvoiceModel>({
   ],
 });
 
-const calTotal = () => {
+function calTotal() {
   invoiceData.value.net_amount = invoiceData.value.items.reduce(
     (acc, val) => acc + (val as any).amount,
     0,
@@ -92,7 +92,7 @@ const calTotal = () => {
     invoiceData.value.igst_value;
   invoiceData.value.gross_total = Math.floor(invoiceData.value.gross_total * 100) / 100;
   invoiceData.value.gross_total.toFixed(2);
-};
+}
 
 const removeRow = (index: string): void => {
   invoiceData.value.items.splice(
