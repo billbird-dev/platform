@@ -28,7 +28,7 @@ export class PurchaseService {
     )
       .split(' ')
       .map((e) => e[0])
-      .join('')}${dayjs().format('YYYYMMDD')}`;
+      .join('')}${dayjs().format('YYYYMMDD')}`.toUpperCase();
 
     const invoice_number = `${invoice_name}-${updated_company.purchase_invoice_count}`;
 
