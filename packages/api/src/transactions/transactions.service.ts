@@ -40,10 +40,14 @@ export class TransactionsService {
   }
 
   async getTransaction(companyId: number) {
-    const transactions = await this.transactionsRepo.find({
-      where: { company: companyId },
-      loadRelationIds: { relations: ['sale_bill', 'purchase_bill'] },
-    });
+    const transactions = await this.transactionsRepo
+      .createQueryBuilder('transaction')
+      .leftJoin('transaction.sale_bill', 'sale')
+      .addSelect(['sale.invoice_number', 'sale.id'])
+      .leftJoin('transaction.purchase_bill', 'purchase')
+      .addSelect(['purchase.invoice_number', 'purchase.id'])
+      .where('transaction.company_id = :id', { id: companyId })
+      .getMany();
 
     if (!transactions) throw new HttpException('Unable to retrive ledger entries', 500);
 

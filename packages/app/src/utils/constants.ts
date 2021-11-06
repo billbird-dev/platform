@@ -129,7 +129,7 @@ export const InventoryTableColumns: any[] = [
   },
 ];
 
-export const LedgerTableColumns = [
+export const LedgerTableColumns: any[] = [
   {
     name: 'date',
     required: true,

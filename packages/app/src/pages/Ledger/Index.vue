@@ -4,7 +4,7 @@ import { useQuasar } from 'quasar';
 
 import { LedgerTableColumns } from 'src/utils/constants';
 import { LedgerModel } from 'src/types/interfaces';
-import { useBillBirdApi, useSwr } from 'src/utils/helpers';
+import { useBillBirdApi, useSwr, formatDate } from 'src/utils/helpers';
 
 const initialPagination = {
   sortBy: 'date',
@@ -15,8 +15,8 @@ const initialPagination = {
 
 const { loading } = useQuasar();
 
-const { getAll } = useBillBirdApi<LedgerModel>('/transactions/');
-const { data: Ledger, isValidating } = useSwr('/transactions/', getAll);
+const { getAll } = useBillBirdApi<LedgerModel>('/transactions');
+const { data: Ledger, isValidating } = useSwr('/transactions', getAll);
 
 watchEffect(() => {
   if (isValidating.value) return loading.show();
@@ -51,9 +51,18 @@ watchEffect(() => {
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td v-for="col in props.cols" :key="col.name" :props="props">
-            <template v-if="col.name === 'type'">
+            <template v-if="col.name === 'date'">
+              {{ formatDate(props.row.date, 'DD-MMM-YYYY') }}
+            </template>
+
+            <template v-else-if="col.name === 'time'">
+              {{ formatDate(props.row.date, 'hh:mm A') }}
+            </template>
+
+            <template v-else-if="col.name === 'type'">
               {{ props.row.sale_bill ? 'Sale' : 'Purchase' }}
             </template>
+
             <template v-else-if="col.name === 'no'">
               {{
                 props.row.purchase_bill
@@ -61,15 +70,16 @@ watchEffect(() => {
                   : props.row.sale_bill.invoice_number
               }}
             </template>
+
             <template v-else-if="col.name === 'credit' || col.name === 'debit'">
               ₹ {{ props.row[col.name] }}
             </template>
-            <template v-else>
-              <template v-if="props.row[col.name]">
-                {{ props.row[col.name] }}
-              </template>
+
+            <template v-else-if="props.row[col.name]">
+              {{ props.row[col.name] }}
             </template>
           </q-td>
+
           <q-td auto-width>
             <router-link
               :to="
