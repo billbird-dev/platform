@@ -12,7 +12,7 @@ async function bootstrap() {
     new FastifyAdapter({ logger: true }),
     {
       cors: {
-        origin: ['http://localhost:8080'],
+        origin: ['http://localhost:8080', 'https://beta.billbird.in'],
         credentials: true,
         exposedHeaders: ['set-cookie'],
       },

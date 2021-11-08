@@ -13,13 +13,14 @@ import { SupplierModule } from './supplier/supplier.module';
 import { PurchaseModule } from './purchase/purchase.module';
 import { PreferencesModule } from './preferences/preferences.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { join } from 'path';
 
 @Module({
   controllers: [AppController],
   providers: [AppService],
   imports: [
     DatabaseModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ envFilePath: join(__dirname, '../.env') }),
     CompanyModule,
     AuthModule,
     InventoryModule,
