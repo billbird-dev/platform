@@ -34,6 +34,8 @@ export default boot(({ store, router }) => {
       await store.dispatch('users/LOGOUT');
 
       router.push('/');
+
+      throw new Error('failed to authorize');
     } finally {
       Loading.hide();
     }
@@ -42,14 +44,13 @@ export default boot(({ store, router }) => {
   api.interceptors.response.use(
     (res) => res,
     async (err: AxiosError) => {
-      if (
-        err.response?.status === 401 ||
-        err.response?.statusText.toLowerCase().includes('unauthorized')
-      ) {
-        await refreshTokens();
-      }
+      if (err.response?.status !== 401) return Promise.reject(err);
 
-      return err;
+      await refreshTokens();
+
+      const config = err.config;
+
+      return api.request(config);
     },
   );
 });
