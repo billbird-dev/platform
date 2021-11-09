@@ -14,17 +14,17 @@ export class CompanyEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', nullable: false, unique: true, length: 150 })
+  @Column({ type: 'varchar', nullable: false, unique: true, length: 200 })
   username: string;
 
-  @Column({ type: 'varchar', nullable: false, unique: true, length: 128 })
+  @Column({ type: 'varchar', nullable: false, unique: true, length: 500 })
   @Exclude()
   password: string;
 
-  @Column({ type: 'varchar', nullable: true, length: 100 })
+  @Column({ type: 'varchar', nullable: true, length: 500 })
   name: string;
 
-  @Column({ type: 'varchar', nullable: true, length: 254 })
+  @Column({ type: 'varchar', nullable: true, length: 500 })
   email: string;
 
   @Column({ type: 'bigint', nullable: false })
@@ -55,25 +55,25 @@ export class CompanyEntity extends BaseEntity {
   @JoinColumn({ name: 'parent_id', referencedColumnName: 'id' })
   parent: CompanyEntity;
 
-  @Column({ type: 'varchar', length: 50 })
+  @Column({ type: 'varchar', length: 200 })
   branch: string;
 
   @Column({ type: 'text', nullable: true })
   address: string;
 
-  @Column({ type: 'varchar', length: 5, nullable: true })
+  @Column({ type: 'varchar', length: 200, nullable: true })
   city: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
+  @Column({ type: 'varchar', length: 200, nullable: true })
   state: string;
 
   @Column({ type: 'int', nullable: true })
   pincode: number;
 
-  @Column({ type: 'varchar', nullable: true, length: 255 })
+  @Column({ type: 'varchar', nullable: true, length: 500 })
   gstin: string;
 
-  @Column({ type: 'varchar', nullable: false, length: 10 })
+  @Column({ type: 'varchar', nullable: false, length: 50 })
   state_code: string;
 
   @Column({ type: 'timestamp', nullable: true })
