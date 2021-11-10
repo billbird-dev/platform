@@ -77,6 +77,7 @@ export class AuthController {
     res.send({ token });
   }
 
+  @UseGuards(JwtRefreshGuard)
   @Post('log-out')
   @HttpCode(200)
   async logOut(@Req() request: RequestWithCompany, @Res() res: Response) {

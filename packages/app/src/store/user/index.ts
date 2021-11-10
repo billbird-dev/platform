@@ -1,7 +1,6 @@
 import { api, setToken } from 'src/boot/axios';
 import { Module } from 'vuex';
 import { StateInterface } from 'src/store/index';
-import { Loading } from 'quasar';
 
 export interface Company {
   id: number;
@@ -56,38 +55,15 @@ const userModule: Module<userStateInterface, StateInterface> = {
         commit('setUser', {});
       }
     },
-    LOGIN: ({ dispatch }, payload: Record<string, any>) => {
-      return new Promise(async (resolve, reject) => {
-        Loading.show();
-
-        try {
-          const {
-            data: { company, token },
-          } = await api.post<{ company: Company; token: string }>('/auth/login', {
-            ...payload,
-          });
-
-          dispatch('USER', company);
-          setToken(token);
-
-          resolve(company);
-        } catch (error) {
-          await dispatch('USER', null);
-
-          reject((error as any).response.data.detail);
-        } finally {
-          Loading.hide();
-        }
-      });
-    },
     async LOGOUT({ dispatch }) {
       try {
         setToken(null);
+
         await dispatch('USER', null);
+        localStorage.clear();
+
         await api.post('/auth/log-out');
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     },
   },
   getters: {

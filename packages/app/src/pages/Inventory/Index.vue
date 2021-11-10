@@ -44,7 +44,7 @@ const resetProduct = () =>
 
 const form = ref<null | QForm>(null);
 const isEditMode = ref(false);
-const { data, mutate, isValidating } = useSwr<ProductModel>('/inventory/', getAll);
+const { data, mutate, isValidating } = useSwr<ProductModel>('/inventory', getAll);
 
 function editMode(id: number) {
   newProduct.value = {

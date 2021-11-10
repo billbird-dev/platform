@@ -7,6 +7,9 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { StateInterface } from 'src/store';
 import { fetcherFn } from 'swrv/dist/types';
 import { api } from 'src/boot/axios';
+import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage';
+
+const CACHE_TTL = 7 * 21 * 60 * 60 * 60;
 
 /**
  * Get a cookie from browser by name
@@ -99,6 +102,9 @@ export const useSwr = <T>(
     ...config,
     refreshInterval: 600000,
     revalidateOnFocus: false,
+    cache: new LocalStorageCache(),
+    errorRetryCount: 2,
+    ttl: CACHE_TTL,
   });
 
 /**
@@ -209,3 +215,10 @@ export function randomId(len?: number) {
 
 export const formatDate = (data: string, format?: string) =>
   date.formatDate(data, format || 'YYYY-MM-DD');
+
+export const getErrorMessage = (error: any): string => {
+  return (
+    (!!error.response && !!error.response.data && error.response.data.message) ||
+    'Some error occured !'
+  );
+};

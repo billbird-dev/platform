@@ -2,12 +2,16 @@
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import { useNotify } from 'src/utils/helpers';
+import { getErrorMessage, useNotify } from 'src/utils/helpers';
 import AppInput from 'src/components/App/AppInput.vue';
 import { LoginDto } from 'src/types/dtos';
+import { useQuasar } from 'quasar';
+import { api, setToken } from 'src/boot/axios';
+import { Company } from 'src/store/user';
 
 const store = useStore();
 const router = useRouter();
+const { loading } = useQuasar();
 
 const isLoggedIn = computed((): boolean => store.getters['users/isLoggedIn']);
 const isForgotPassword = ref(false);
@@ -19,6 +23,8 @@ const user = ref({
 
 const login = async () => {
   try {
+    loading.show();
+
     const payload: LoginDto = {
       password: user.value.password,
       key: {
@@ -27,7 +33,14 @@ const login = async () => {
       },
     };
 
-    await store.dispatch('users/LOGIN', payload);
+    const {
+      data: { company, token },
+    } = await api.post<{ company: Company; token: string }>('/auth/login', {
+      ...payload,
+    });
+
+    store.dispatch('users/USER', company);
+    setToken(token);
 
     router.push('/home');
     useNotify('positive', 'Logged in successfully');
@@ -37,7 +50,9 @@ const login = async () => {
       password: '',
     };
 
-    useNotify('negative', error);
+    useNotify('negative', getErrorMessage(error));
+  } finally {
+    loading.hide();
   }
 };
 </script>
