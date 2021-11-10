@@ -9,13 +9,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ logger: true }),
+    new FastifyAdapter({ logger: !process.env.PROD }),
     {
       cors: {
         origin: ['http://localhost:8080', 'https://beta.billbird.in'],
         credentials: true,
         exposedHeaders: ['set-cookie'],
       },
+      logger: !process.env.PROD ? undefined : false,
     },
   );
 
