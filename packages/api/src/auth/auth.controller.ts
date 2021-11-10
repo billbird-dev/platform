@@ -39,52 +39,44 @@ export class AuthController {
   @HttpCode(200)
   @Post('login')
   async logIn(@Body() body: LoginUserDto, @Res() res: Response) {
-    try {
-      const company = await this.authService.getAuthenticatedUser(body.key, body.password);
+    const company = await this.authService.getAuthenticatedUser(body.key, body.password);
 
-      const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(company.id);
-      const { cookie: refreshTokenCookie, token } = this.authService.getCookieWithJwtRefreshToken(
-        company.id,
-      );
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(company.id);
+    const { cookie: refreshTokenCookie, token } = this.authService.getCookieWithJwtRefreshToken(
+      company.id,
+    );
 
-      await this.companyService.setCurrentRefreshToken(token, company.id);
+    await this.companyService.setCurrentRefreshToken(token, company.id);
 
-      res.header('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+    res.header('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
 
-      res.send({
-        company: {
-          ...company,
-          password: undefined,
-          current_hashed_refresh_token: undefined,
-        },
-        token,
-      });
-      return company;
-    } catch (error) {
-      throw new HttpException('Some error occured', 500);
-    }
+    res.send({
+      company: {
+        ...company,
+        password: undefined,
+        current_hashed_refresh_token: undefined,
+      },
+      token,
+    });
+
+    return company;
   }
 
   @UseGuards(JwtRefreshGuard)
   @Get('refresh')
   async refresh(@Req() request: RequestWithCompany, @Res() res: Response) {
-    try {
-      const { cookie: refreshTokenCookie, token } = this.authService.getCookieWithJwtRefreshToken(
-        request.user.id,
-      );
-      const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(request.user.id);
+    const { cookie: refreshTokenCookie, token } = this.authService.getCookieWithJwtRefreshToken(
+      request.user.id,
+    );
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(request.user.id);
 
-      await this.companyService.setCurrentRefreshToken(token, request.user.id);
+    await this.companyService.setCurrentRefreshToken(token, request.user.id);
 
-      res.header('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+    res.header('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
 
-      res.send({ token });
-    } catch (error) {
-      throw new HttpException('Some error occured', 500);
-    }
+    res.send({ token });
   }
 
-  @UseGuards(JwtAuthenticationGuard)
   @Post('log-out')
   @HttpCode(200)
   async logOut(@Req() request: RequestWithCompany, @Res() res: Response) {
