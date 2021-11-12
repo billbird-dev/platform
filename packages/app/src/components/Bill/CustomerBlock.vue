@@ -81,7 +81,7 @@ const setectedDate = (date: any) => {
           popup-content-class="bg"
           hide-bottom-space
           hide-dropdown-icon
-          :option-label="(item) => (item && item.id ? `${item.name} -- (${item.phone})` : item)"
+          :option-label="(item: any) => (item && item.id ? `${item.name} -- (${item.phone})` : item)"
           option-value="id"
           class="q-pb-sm"
           emit-value

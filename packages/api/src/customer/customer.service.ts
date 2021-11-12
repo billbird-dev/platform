@@ -41,8 +41,6 @@ export class CustomerService {
   }
 
   async updateById(companyId: number, id: number, customerData: updateCustomerDto) {
-    await this.getById(companyId, id);
-
     await this.customerRepo.update({ id, company: { id: companyId } }, { ...customerData });
 
     return await this.getById(companyId, id);

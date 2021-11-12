@@ -8,13 +8,15 @@ import {
   Query,
   UseInterceptors,
   ClassSerializerInterceptor,
+  Param,
+  Patch,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestWithCompany } from 'src/auth/auth.interfaces';
 import JwtAuthenticationGuard from 'src/auth/jwt-auth.guard';
 import { PurchasePreferencesDto } from 'src/preferences/preferences.dto';
 import { PreferencesService } from 'src/preferences/preferences.service';
-import { CreatePurchaseDto } from './purchase.dto';
+import { CreatePurchaseDto, UpdatePurchaseDto } from './purchase.dto';
 import { PurchaseService } from './purchase.service';
 
 @ApiTags('purchase')
@@ -55,10 +57,21 @@ export class PurchaseController {
     return this.prefService.createOrUpdatePurchasePref(req.user.id, prefData);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateSaleDto: any) {
-  //   return this.purchaseService.update(+id, updateSaleDto);
-  // }
+  @UseGuards(JwtAuthenticationGuard)
+  @Get(':id')
+  getById(@Req() req: RequestWithCompany, @Param('id') id: number) {
+    return this.purchaseService.findOne(req.user.id, id);
+  }
+
+  @UseGuards(JwtAuthenticationGuard)
+  @Patch(':id')
+  update(
+    @Req() req: RequestWithCompany,
+    @Param('id') id: number,
+    @Body() updatePurchaseDto: UpdatePurchaseDto,
+  ) {
+    return this.purchaseService.update(req.user.id, id, updatePurchaseDto);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

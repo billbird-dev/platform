@@ -8,13 +8,15 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Query,
+  Param,
+  Patch,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestWithCompany } from 'src/auth/auth.interfaces';
 import JwtAuthenticationGuard from 'src/auth/jwt-auth.guard';
 import { SalePreferencesDto } from 'src/preferences/preferences.dto';
 import { PreferencesService } from 'src/preferences/preferences.service';
-import { CreateSaleDto } from './sale.dto';
+import { CreateSaleDto, UpdateSaleDto } from './sale.dto';
 import { SaleService } from './sale.service';
 
 @ApiTags('sale')
@@ -44,6 +46,12 @@ export class SaleController {
   }
 
   @UseGuards(JwtAuthenticationGuard)
+  @Get(':id')
+  getById(@Req() req: RequestWithCompany, @Param('id') id: number) {
+    return this.saleService.findOne(req.user.id, id);
+  }
+
+  @UseGuards(JwtAuthenticationGuard)
   @Get('preferences')
   getPreferences(@Req() req: RequestWithCompany) {
     return this.prefService.getSalePref(req.user.id);
@@ -54,10 +62,16 @@ export class SaleController {
   managePrefs(@Req() req: RequestWithCompany, @Body() prefData: SalePreferencesDto) {
     return this.prefService.createOrUpdateSalePref(req.user.id, prefData);
   }
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateSaleDto: any) {
-  //   return this.saleService.update(+id, updateSaleDto);
-  // }
+
+  @UseGuards(JwtAuthenticationGuard)
+  @Patch(':id')
+  update(
+    @Req() req: RequestWithCompany,
+    @Param('id') id: number,
+    @Body() updateSaleDto: UpdateSaleDto,
+  ) {
+    return this.saleService.update(req.user.id, id, updateSaleDto);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

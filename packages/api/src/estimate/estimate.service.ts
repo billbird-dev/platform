@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { CompanyWithParent } from 'src/auth/auth.interfaces';
 import { CompanyService } from 'src/company/company.service';
 import { Repository } from 'typeorm';
-import { CreateEstimateDto } from './estimate.dto';
+import { CreateEstimateDto, UpdateEstimateDto } from './estimate.dto';
 import { EstimateEntity } from './estimate.entity';
 
 @Injectable()
@@ -82,10 +82,11 @@ export class EstimateService {
     return estimate_invoice;
   }
 
-  // update(id: number, updateEstimateDto: any) {
-  //   return `This action updates a #${id} estimate`;
-  // }
+  update(companyId: number, id: number, updateEstimateDto: UpdateEstimateDto) {
+    this.estimateRepo.update({ id, company: { id: companyId } }, { ...updateEstimateDto });
 
+    return this.findOne(companyId, id);
+  }
   // remove(id: number) {
   //   return `This action removes a #${id} estimate`;
   // }

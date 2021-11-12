@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/swagger';
+import { PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -11,8 +11,9 @@ import {
 import { EstimateItem } from './estimate-item.interface';
 
 export class CreateEstimateDto {
+  @IsOptional()
   @IsDateString()
-  date: Date = new Date();
+  date?: Date = new Date();
 
   @IsNumber()
   customer: number;
@@ -40,4 +41,8 @@ export class CreateEstimateDto {
   items: EstimateItem[];
 }
 
-export class UpdateEstimateDto extends PartialType(CreateEstimateDto) {}
+export class UpdateEstimateDto extends PickType(CreateEstimateDto, [
+  'date',
+  'billing_address',
+  'shipping_address',
+]) {}

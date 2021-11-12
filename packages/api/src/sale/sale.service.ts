@@ -5,7 +5,7 @@ import { CompanyWithParent } from 'src/auth/auth.interfaces';
 import { CompanyService } from 'src/company/company.service';
 import { TransactionsService } from 'src/transactions/transactions.service';
 import { Repository } from 'typeorm';
-import { CreateSaleDto } from './sale.dto';
+import { CreateSaleDto, UpdateSaleDto } from './sale.dto';
 import { SaleEntity } from './sale.entity';
 
 @Injectable()
@@ -89,9 +89,11 @@ export class SaleService {
     return sale_invoice;
   }
 
-  // update(id: number, updateSaleDto: any) {
-  //   return `This action updates a #${id} sale`;
-  // }
+  update(companyId: number, id: number, updateSaleDto: UpdateSaleDto) {
+    this.saleRepo.update({ id, company: { id: companyId } }, { ...updateSaleDto });
+
+    return this.findOne(companyId, id);
+  }
 
   // remove(id: number) {
   //   return `This action removes a #${id} sale`;

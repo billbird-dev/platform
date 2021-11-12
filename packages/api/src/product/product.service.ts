@@ -23,9 +23,9 @@ export class InventoryService {
     return await this.productRepo.create({ ...product, company: { id: companyId } }).save();
   }
 
-  async getInventory(companyId: number) {
+  async getInventory(companyId: number, parentId?: number) {
     return await this.productRepo.find({
-      where: { company: companyId },
+      where: [{ company: companyId }, { company: parentId }],
       loadRelationIds: { relations: ['company'] },
     });
   }

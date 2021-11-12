@@ -41,8 +41,6 @@ export class SupplierService {
   }
 
   async updateById(companyId: number, id: number, supplierData: updateSupplierDto) {
-    await this.getById(companyId, id);
-
     await this.supplierRepo.update({ id, company: { id: companyId } }, { ...supplierData });
 
     return await this.getById(companyId, id);

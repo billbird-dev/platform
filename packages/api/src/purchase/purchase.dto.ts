@@ -1,11 +1,12 @@
-import { PartialType } from '@nestjs/swagger';
+import { PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsDateString, IsNumber, ValidateNested } from 'class-validator';
+import { IsArray, IsDateString, IsNumber, IsOptional, ValidateNested } from 'class-validator';
 import { PurchaseItem } from './purchase-item.interface';
 
 export class CreatePurchaseDto {
+  @IsOptional()
   @IsDateString()
-  date: Date = new Date();
+  date?: Date = new Date();
 
   @IsNumber()
   supplier: number;
@@ -46,4 +47,4 @@ export class CreatePurchaseDto {
   items: PurchaseItem[];
 }
 
-export class UpdatePurchaseDto extends PartialType(CreatePurchaseDto) {}
+export class UpdatePurchaseDto extends PickType(CreatePurchaseDto, ['date']) {}

@@ -34,7 +34,7 @@ export class InventoryController {
 
   @Get()
   findAll(@Req() req: RequestWithCompany) {
-    return this.inventoryService.getInventory(req.user.id);
+    return this.inventoryService.getInventory(req.user.id, req.user.parent);
   }
 
   @Get(':id')

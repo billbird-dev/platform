@@ -5,7 +5,7 @@ import { CompanyWithParent } from 'src/auth/auth.interfaces';
 import { CompanyService } from 'src/company/company.service';
 import { TransactionsService } from 'src/transactions/transactions.service';
 import { Repository } from 'typeorm';
-import { CreatePurchaseDto } from './purchase.dto';
+import { CreatePurchaseDto, UpdatePurchaseDto } from './purchase.dto';
 import { PurchaseEntity } from './purchase.entity';
 
 @Injectable()
@@ -89,9 +89,11 @@ export class PurchaseService {
     return purchase_invoice;
   }
 
-  // update(id: number, updatePurchaseDto: any) {
-  //   return `This action updates a #${id} purchase`;
-  // }
+  update(companyId: number, id: number, updatePurchaseDto: UpdatePurchaseDto) {
+    this.purchaseRepo.update({ id, company: { id: companyId } }, { ...updatePurchaseDto });
+
+    return this.findOne(companyId, id);
+  }
 
   // remove(id: number) {
   //   return `This action removes a #${id} purchase`;
