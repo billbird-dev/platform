@@ -27,8 +27,9 @@
     }
   },
   "lint-staged": {
-    "packages/**/*.{js,ts,jsx,tsx,vue}": [
-      "prettier --write"
+    "*.{js,ts,jsx,tsx,vue}": [
+      "prettier --write",
+      "eslint --fix"
     ]
   },
   "dependencies": {
