@@ -19,7 +19,7 @@
     "vuex": "next"
   },
   "devDependencies": {
-    "@quasar/app": "^3.2.4",
+    "@quasar/app": "^3.2.6",
     "@types/node": "^10.17.15",
     "@typescript-eslint/eslint-plugin": "^4.28.3",
     "@typescript-eslint/parser": "^4.28.3",
