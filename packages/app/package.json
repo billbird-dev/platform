@@ -27,7 +27,7 @@
     "dotenv": "^10.0.0",
     "electron": "^12.0.1",
     "electron-builder": "^22.4.0",
-    "eslint": "^7.31.0",
+    "eslint": "^8.10.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-vue": "latest",
     "postcss-windicss": "^1.0.0",
