@@ -1,8 +1,14 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: '/packages'
+    directory: '/packages/api'
     schedule:
-      interval: weekly
+      interval: daily
+    open-pull-requests-limit: 10
+    target-branch: master
+  - package-ecosystem: npm
+    directory: '/packages/app'
+    schedule:
+      interval: daily
     open-pull-requests-limit: 10
     target-branch: master
