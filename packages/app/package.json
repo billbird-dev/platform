@@ -11,29 +11,32 @@
     "typecheck": "vue-tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@quasar/extras": "^1.12.1",
-    "axios": "^0.21.4",
-    "core-js": "^3.15.2",
-    "quasar": "^2.3.3",
+    "@quasar/extras": "^1.12.5",
+    "axios": "^0.26.0",
+    "core-js": "^3.21.1",
+    "quasar": "^2.5.5",
     "swrv": "beta",
-    "vuex": "next"
+    "vue": "latest",
+    "vue-router": "latest",
+    "vuex": "latest"
   },
   "devDependencies": {
-    "@quasar/app": "^3.2.6",
-    "@types/node": "^10.17.15",
-    "@typescript-eslint/eslint-plugin": "^4.28.3",
-    "@typescript-eslint/parser": "^4.28.3",
+    "@quasar/app": "^3.3.3",
+    "@types/node": "^17.0.21",
+    "@typescript-eslint/eslint-plugin": "^5.13.0",
+    "@typescript-eslint/parser": "^5.13.0",
+    "autoprefixer": "^10.4.2",
     "babel-eslint": "^10.1.0",
-    "dotenv": "^10.0.0",
-    "electron": "^12.0.1",
-    "electron-builder": "^22.4.0",
-    "eslint": "^7.31.0",
+    "dotenv": "^16.0.0",
+    "electron": "^17.1.0",
+    "electron-builder": "^22.14.13",
+    "eslint": "^8.10.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-vue": "latest",
     "postcss-windicss": "^1.0.0",
-    "typescript": "^4.4.3",
+    "typescript": "^4.6.2",
     "vue-tsc": "latest",
-    "workbox-webpack-plugin": "^5.0.0"
+    "workbox-webpack-plugin": "^6.5.1"
   },
   "browserslist": [
     "last 10 Chrome versions",
