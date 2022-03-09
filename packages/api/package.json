@@ -35,7 +35,7 @@
     "class-validator": "^0.13.2",
     "dayjs": "^1.10.8",
     "fastify-cookie": "^5.6.0",
-    "fastify-swagger": "^4.17.0",
+    "fastify-swagger": "^5.0.0",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "pg": "^8.7.3",
