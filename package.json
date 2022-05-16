@@ -33,12 +33,12 @@
     ]
   },
   "dependencies": {
-    "concurrently": "^7.0.0"
+    "concurrently": "^7.2.0"
   },
   "devDependencies": {
     "husky": "7",
-    "lint-staged": "^12.3.5",
-    "prettier": "^2.5.1"
+    "lint-staged": "^12.4.1",
+    "prettier": "^2.6.2"
   },
   "engines": {
     "node": ">= 12.22.1",
