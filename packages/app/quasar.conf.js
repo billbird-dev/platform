@@ -52,7 +52,7 @@ module.exports = configure(function (/* ctx */) {
       vueRouterMode: 'history',
       env: {
         // APP_API: 'https://omega.pythonanywhere.com',
-        APP_API: process.env.APP_API || require('dotenv').config().parsed['APP_API'] || '',
+        APP_API: process.env.APP_API || require('dotenv').config().parsed?.['APP_API'] || '',
       },
       // transpile: false,
 
