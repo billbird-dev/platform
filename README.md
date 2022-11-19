@@ -1,5 +1,10 @@
 ## BillBird platform v2
 
+
+> **Status**
+> 
+> BillBird is currently in maintenance mode. Which means I'll be upgrading deps to minor and patch versions only. I can't commit to major version upgrades as that may break the functionality of the app and I don't have time to fix'em :).
+
 ### What is this
 
 Billbird is a 360 degree business management platform with following features
